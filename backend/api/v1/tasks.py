@@ -210,7 +210,7 @@ async def plan_project(
         raise HTTPException(status_code=404, detail="Project not found")
 
     domain = payload.domain or project.domain
-    plan_result = planner.plan(goal=payload.goal, domain=domain)
+    plan_result = await planner.plan(goal=payload.goal, domain=domain)
 
     index_to_task_id: Dict[int, str] = {}
     created_tasks: List[Task] = []
@@ -232,19 +232,20 @@ async def plan_project(
         created_tasks.append(task)
 
     for item in plan_result.tasks:
-        if item.dependencies:
+        if item.dependencies and item.index in index_to_task_id:
             task_id = index_to_task_id[item.index]
             dep_ids = [index_to_task_id[d] for d in item.dependencies if d in index_to_task_id]
             t_res = await db.execute(select(Task).where(Task.id == task_id))
-            t = t_res.scalar_one()
-            t.dependencies = ",".join(dep_ids)
+            t = t_res.scalar_one_or_none()
+            if t:
+                t.dependencies = ",".join(dep_ids)
 
             # Link in FalkorDB
             for dep_id in dep_ids:
                 try:
                     memory_service.link_task_dependency(project_id, task_id, dep_id)
-                except FalkorDBConnectionError:
-                    pass
+                except Exception as exc:
+                    logger.debug("FalkorDB link_task_dependency skipped: %s", exc)
 
     for task in created_tasks:
         try:
@@ -255,8 +256,8 @@ async def plan_project(
                 task_type=task.task_type,
                 priority=task.priority,
             )
-        except FalkorDBConnectionError:
-            pass
+        except Exception as exc:
+            logger.debug("FalkorDB create_task_node skipped: %s", exc)
 
     await db.commit()
 

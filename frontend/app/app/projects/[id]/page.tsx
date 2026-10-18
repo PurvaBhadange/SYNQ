@@ -53,6 +53,7 @@ export default function ProjectWorkspacePage({
   const [plannerGoal, setPlannerGoal] = useState('');
   const [planning, setPlanning] = useState(false);
   const [planSuccessMsg, setPlanSuccessMsg] = useState<string | null>(null);
+  const [planErrorMsg, setPlanErrorMsg] = useState<string | null>(null);
 
   // Memory Graph
   const [memoryGraph, setMemoryGraph] = useState<MemoryGraphData | null>(null);
@@ -185,13 +186,14 @@ export default function ProjectWorkspacePage({
     try {
       setPlanning(true);
       setPlanSuccessMsg(null);
+      setPlanErrorMsg(null);
       const res = await tasksApi.plan(projectId, plannerGoal, project?.domain);
       setPlanSuccessMsg(`Decomposed goal into ${res.task_count} subtasks.`);
       setPlannerGoal('');
       await loadProjectAndTasks();
       setActiveTab('dag');
     } catch (err: any) {
-      alert(err.message || 'Planning failed');
+      setPlanErrorMsg(err.message || 'Planning failed');
     } finally {
       setPlanning(false);
     }
@@ -734,6 +736,12 @@ export default function ProjectWorkspacePage({
           {planSuccessMsg && (
             <div style={{ padding: '12px 16px', background: 'rgba(81, 207, 102, 0.15)', color: 'var(--status-completed)', borderRadius: '8px', marginBottom: '20px' }}>
               ✓ {planSuccessMsg}
+            </div>
+          )}
+
+          {planErrorMsg && (
+            <div style={{ padding: '12px 16px', background: 'rgba(235, 87, 87, 0.15)', color: '#ff6b6b', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              ⚠ {planErrorMsg}
             </div>
           )}
 

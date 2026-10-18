@@ -8,6 +8,7 @@ Decomposes complex user requests into directed acyclic graph (DAG) of subtasks:
 - Computes topological execution order.
 """
 
+import asyncio
 import json
 import logging
 import re
@@ -113,7 +114,10 @@ class Planner:
 
         for cap, provider in eligible:
             try:
-                plan_result = await self._plan_with_provider(provider, goal, domain)
+                plan_result = await asyncio.wait_for(
+                    self._plan_with_provider(provider, goal, domain),
+                    timeout=20.0,
+                )
                 if plan_result and plan_result.is_dag_valid:
                     return plan_result
             except Exception as exc:

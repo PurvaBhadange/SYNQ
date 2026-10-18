@@ -96,14 +96,29 @@ async function apiFetch<T>(
   const base = getApiBase();
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   const url = `${base}${cleanPath}`;
-  const response = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+  
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+  } catch (err: any) {
+    if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
+      throw new Error(`Unable to reach backend service (${url}). The server may be waking up from cold sleep or restarting. Please try again in 10-15 seconds.`);
+    }
+    throw err;
+  }
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API error ${response.status}: ${text}`);
+    let errorDetail = '';
+    try {
+      const errJson = await response.json();
+      errorDetail = errJson.detail || JSON.stringify(errJson);
+    } catch {
+      errorDetail = await response.text();
+    }
+    throw new Error(`API error ${response.status}: ${errorDetail}`);
   }
 
   if (response.status === 204) return undefined as T;
