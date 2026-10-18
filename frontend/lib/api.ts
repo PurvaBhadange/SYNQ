@@ -20,7 +20,7 @@ export function getApiBase(): string {
     if (process.env.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
     }
-    return 'http://localhost:8000/api/v1';
+    return 'https://synq-6p9m.onrender.com/api/v1';
   }
 
   if (process.env.NEXT_PUBLIC_API_URL) {
@@ -29,12 +29,12 @@ export function getApiBase(): string {
 
   // If in browser on localhost or 127.0.0.1 without dev proxy:
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    // When port is 3000 and running without Vercel dev proxy, default to local FastAPI port 8000
     return 'http://localhost:8000/api/v1';
   }
 
-  // Deployed production environment on Vercel: relative rewrite to synq-backend
-  return '/api/v1';
+  // Deployed production environment: connect directly to live Render backend
+  // with configured AI providers, SQLite DB, and WebSockets
+  return 'https://synq-6p9m.onrender.com/api/v1';
 }
 
 export const API_BASE = getApiBase();
