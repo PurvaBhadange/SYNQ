@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: synq-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./synq.db
+      - key: FALKORDB_ENABLED
+        value: "false"
+      - key: FALKORDB_ALLOW_IN_MEMORY_FALLBACK
+        value: "false"
+      - key: FRONTEND_URL
+        value: https://synq-frontend.vercel.app
+      - key: CORS_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false

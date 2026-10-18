@@ -74,6 +74,7 @@ class Settings(BaseSettings):
 
     # ── CORS ─────────────────────────────────────────────────────────────────
     frontend_url: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # ── Artifact Storage ─────────────────────────────────────────────────────
     artifact_storage: str = "local"
