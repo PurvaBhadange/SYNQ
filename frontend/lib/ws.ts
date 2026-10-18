@@ -27,6 +27,19 @@ export interface WebSocketEvent {
 
 export type EventHandler = (event: WebSocketEvent) => void;
 
+export function getWsBase(): string {
+  if (process.env.NEXT_PUBLIC_WS_URL) {
+    return process.env.NEXT_PUBLIC_WS_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      // In deployed cloud environment, connect to live Render backend WebSocket
+      return 'wss://synq-6p9m.onrender.com/api/v1/ws';
+    }
+  }
+  return 'ws://localhost:8000/api/v1/ws';
+}
+
 export class SynqWebSocket {
   private ws: WebSocket | null = null;
   private projectId: string;
@@ -37,7 +50,7 @@ export class SynqWebSocket {
 
   constructor(projectId: string) {
     this.projectId = projectId;
-    const wsBase = (process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/api/v1/ws');
+    const wsBase = getWsBase();
     this.url = `${wsBase}/${projectId}`;
     this.connect();
   }

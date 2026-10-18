@@ -108,6 +108,7 @@ app.include_router(export_router, prefix="/api/v1")
 
 # ── Health endpoints ──────────────────────────────────────────────────────────
 @app.get("/health", tags=["system"])
+@app.get("/api/v1/health", tags=["system"])
 async def health():
     """System health check."""
     from core.capability_registry import registry

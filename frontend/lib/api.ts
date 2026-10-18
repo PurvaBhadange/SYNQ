@@ -3,7 +3,41 @@
  * Typed client for communicating with the SYNQ FastAPI backend.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+/**
+ * Resolves the API base URL depending on runtime environment:
+ * 1. Server-side runtime (Next.js SSR, Route Handlers, Server Actions):
+ *    Uses process.env.BACKEND_URL injected by Vercel Services binding.
+ * 2. Client-side browser runtime:
+ *    Uses NEXT_PUBLIC_API_URL if configured, otherwise defaults to '/api/v1'
+ *    in deployed environments (routed to synq-backend via Vercel rewrites),
+ *    or 'http://localhost:8000/api/v1' during local standalone development.
+ */
+export function getApiBase(): string {
+  if (typeof window === 'undefined') {
+    if (process.env.BACKEND_URL) {
+      return `${process.env.BACKEND_URL.replace(/\/+$/, '')}/api/v1`;
+    }
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+    }
+    return 'http://localhost:8000/api/v1';
+  }
+
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+  }
+
+  // If in browser on localhost or 127.0.0.1 without dev proxy:
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    // When port is 3000 and running without Vercel dev proxy, default to local FastAPI port 8000
+    return 'http://localhost:8000/api/v1';
+  }
+
+  // Deployed production environment on Vercel: relative rewrite to synq-backend
+  return '/api/v1';
+}
+
+export const API_BASE = getApiBase();
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,7 +93,9 @@ async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const url = `${API_BASE}${path}`;
+  const base = getApiBase();
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${base}${cleanPath}`;
   const response = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
@@ -267,6 +303,24 @@ export const tasksApi = {
 
   getDetail: (taskId: string): Promise<TaskDetail> =>
     apiFetch<TaskDetail>(`/tasks/${taskId}/detail`),
+
+  addDependency: (projectId: string, taskId: string, dependsOnTaskId: string): Promise<any> =>
+    apiFetch(`/projects/${projectId}/dependencies`, {
+      method: 'POST',
+      body: JSON.stringify({
+        task_id: taskId,
+        depends_on_task_id: dependsOnTaskId,
+      }),
+    }),
+
+  removeDependency: (projectId: string, taskId: string, dependsOnTaskId: string): Promise<any> =>
+    apiFetch(`/projects/${projectId}/dependencies`, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        task_id: taskId,
+        depends_on_task_id: dependsOnTaskId,
+      }),
+    }),
 };
 
 // ── Memory ────────────────────────────────────────────────────────────────────
@@ -307,16 +361,25 @@ export const exportApi = {
     apiFetch<ExportPreview>(`/projects/${projectId}/export/preview`),
 
   getZipUrl: (projectId: string): string =>
-    `${API_BASE}/projects/${projectId}/export/zip`,
+    `${getApiBase()}/projects/${projectId}/export/zip`,
 
   getMarkdownUrl: (projectId: string): string =>
-    `${API_BASE}/projects/${projectId}/export/markdown`,
+    `${getApiBase()}/projects/${projectId}/export/markdown`,
 };
 
 // ── System ────────────────────────────────────────────────────────────────────
 
 export const systemApi = {
-  health: (): Promise<Record<string, unknown>> =>
-    fetch(`${API_BASE.replace('/api/v1', '')}/health`).then(r => r.json()),
+  health: async (): Promise<Record<string, unknown>> => {
+    try {
+      return await apiFetch<Record<string, unknown>>('/health');
+    } catch {
+      // Fallback: direct root health check
+      const rootUrl = getApiBase().replace(/\/api\/v1\/?$/, '');
+      const healthUrl = rootUrl ? `${rootUrl}/health` : '/health';
+      const r = await fetch(healthUrl);
+      return await r.json();
+    }
+  },
 };
 

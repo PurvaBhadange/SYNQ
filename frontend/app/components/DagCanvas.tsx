@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Task } from '@/lib/api';
+import { Task, tasksApi } from '@/lib/api';
 
 export interface DagNode {
   id: string;
@@ -258,18 +258,7 @@ export default function DagCanvas({
     setDepLoading(true);
     setDepError(null);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/projects/${projectId}/dependencies`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          task_id: depTargetId,
-          depends_on_task_id: depSourceId,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.detail || 'Failed to add dependency');
-      }
+      await tasksApi.addDependency(projectId, depTargetId, depSourceId);
       setShowDepModal(false);
       onRefresh();
     } catch (err: any) {
