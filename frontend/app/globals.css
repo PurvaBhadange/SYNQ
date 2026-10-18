@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-primary: #121417;
+  --bg-secondary: #181b1f;
+  --bg-card: #1f2328;
+  --bg-card-hover: #262a30;
+  --bg-glass: rgba(26, 29, 34, 0.75);
+
+  --accent-orange: #f08c00;
+  --accent-orange-light: #ff922b;
+  --accent-orange-dark: #d9480f;
+  --accent-orange-glow: rgba(240, 140, 0, 0.2);
+  --accent-orange-subtle: rgba(240, 140, 0, 0.08);
+
+  --text-primary: #f8f9fa;
+  --text-secondary: #dee2e6;
+  --text-muted: #868e96;
+  --text-dark: #212529;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(240, 140, 0, 0.4);
+
+  --status-pending: #fcc419;
+  --status-running: #339af0;
+  --status-completed: #51cf66;
+  --status-failed: #ff6b6b;
+  --status-paused: #ced4da;
+
+  --font-serif: 'Noto Serif', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-orange: 0 8px 24px var(--accent-orange-glow);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  outline: none;
+}
+
+/* ── Typography Utilities ─────────────────────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Common Components ─────────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--accent-orange);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px var(--accent-orange-glow);
+}
+
+.btn-primary:hover {
+  background: var(--accent-orange-light);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--accent-orange-glow);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-outline-orange {
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-orange:hover {
+  background: var(--accent-orange-subtle);
+}
+
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-pending {
+  background: rgba(252, 196, 25, 0.12);
+  color: var(--status-pending);
+  border: 1px solid rgba(252, 196, 25, 0.3);
+}
+
+.badge-running {
+  background: rgba(51, 154, 240, 0.12);
+  color: var(--status-running);
+  border: 1px solid rgba(51, 154, 240, 0.3);
+}
+
+.badge-completed {
+  background: rgba(81, 207, 102, 0.12);
+  color: var(--status-completed);
+  border: 1px solid rgba(81, 207, 102, 0.3);
+}
+
+.badge-failed {
+  background: rgba(255, 107, 107, 0.12);
+  color: var(--status-failed);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.badge-approval {
+  background: rgba(240, 140, 0, 0.15);
+  color: var(--accent-orange-light);
+  border: 1px solid rgba(240, 140, 0, 0.4);
+}
+
+/* Pulsing dot for active processes */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--status-running);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(51, 154, 240, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(51, 154, 240, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(51, 154, 240, 0);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── SYNQ Landing Page (Tessel-inspired Design System) ─────────────────────── */
+.font-display {
+  font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif;
+  font-optical-sizing: auto;
+}
+
+.font-body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Color Tokens */
+.bg-ink {
+  background-color: #0E1116;
+}
+
+.bg-tile {
+  background-color: #161B22;
+}
+
+.bg-amber {
+  background-color: #F5B841;
+}
+
+.text-ink {
+  color: #0E1116;
+}
+
+.text-bone {
+  color: #F2EFE8;
+}
+
+.text-muted {
+  color: #8B949E;
+}
+
+.text-amber {
+  color: #F5B841;
+}
+
+.border-rule {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Tile 3D Flip Styles */
+.tile-wrapper {
+  perspective: 800px;
+  -webkit-perspective: 800px;
+}
+
+.tile-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.tile-front,
+.tile-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0px;
+}
+
+.tile-front {
+  background-color: #161B22;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transform: rotateX(0deg);
+}
+
+.tile-back {
+  background-color: #F5B841;
+  transform: rotateX(180deg);
+}
+
+.is-on .tile-inner,
+.tile-item.is-on .tile-inner {
+  transform: rotateX(180deg);
+}
+
+/* Scroll reveal motion primitive */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-item.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tile-inner {
+    transition: none !important;
+  }
+  .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

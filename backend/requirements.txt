@@ -1,0 +1,36 @@
+# SYNQ Backend Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Web Framework ─────────────────────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+aiosqlite==0.20.0              # SQLite async driver (dev)
+alembic==1.14.0                # DB migrations
+
+# ── FalkorDB (Graph Memory) ───────────────────────────────────────────────────
+falkordb==1.0.9
+
+# ── AI Providers ──────────────────────────────────────────────────────────────
+httpx==0.28.0                  # Async HTTP client for Ollama
+google-generativeai==0.8.3    # Gemini API
+
+# ── Configuration & Validation ───────────────────────────────────────────────
+pydantic==2.10.2
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+
+# ── Serialization & Utilities ────────────────────────────────────────────────
+orjson==3.10.11                # Fast JSON
+python-jose[cryptography]==3.3.0  # JWT (for future auth)
+passlib[bcrypt]==1.7.4
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+httpx==0.28.0                  # Also used in tests for TestClient
+respx==0.21.1                  # Mock httpx calls
