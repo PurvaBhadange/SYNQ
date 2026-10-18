@@ -35,6 +35,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadData();
+    // Auto-retry after 6s in case backend was spinning up from cold start
+    const timer = setTimeout(() => {
+      loadData();
+    }, 6000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {

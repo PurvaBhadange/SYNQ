@@ -43,10 +43,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isBackendHealthy, setIsBackendHealthy] = useState<boolean | null>(null);
 
   useEffect(() => {
-    systemApi
-      .health()
-      .then((res) => setIsBackendHealthy(res.status === 'ok'))
-      .catch(() => setIsBackendHealthy(false));
+    let isMounted = true;
+    const checkHealth = () => {
+      systemApi
+        .health()
+        .then((res) => {
+          if (isMounted) setIsBackendHealthy(res.status === 'ok');
+        })
+        .catch(() => {
+          if (isMounted) setIsBackendHealthy(false);
+        });
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (

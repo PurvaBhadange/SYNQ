@@ -371,15 +371,27 @@ export const exportApi = {
 
 export const systemApi = {
   health: async (): Promise<Record<string, unknown>> => {
+    const base = getApiBase();
+    const rootUrl = base.replace(/\/api\/v1\/?$/, '');
+    const rootHealthUrl = rootUrl ? `${rootUrl}/health` : '/health';
+
+    // 1. Probe FastAPI root /health endpoint (always available on Render and local)
     try {
-      return await apiFetch<Record<string, unknown>>('/health');
+      const res = await fetch(rootHealthUrl, { headers: { 'Content-Type': 'application/json' } });
+      if (res.ok) {
+        return await res.json();
+      }
     } catch {
-      // Fallback: direct root health check
-      const rootUrl = getApiBase().replace(/\/api\/v1\/?$/, '');
-      const healthUrl = rootUrl ? `${rootUrl}/health` : '/health';
-      const r = await fetch(healthUrl);
-      return await r.json();
+      // Proceed to fallback
     }
+
+    // 2. Fallback: probe /api/v1/health
+    const apiHealthUrl = `${base.replace(/\/+$/, '')}/health`;
+    const res = await fetch(apiHealthUrl, { headers: { 'Content-Type': 'application/json' } });
+    if (!res.ok) {
+      throw new Error(`Health check failed: ${res.status}`);
+    }
+    return await res.json();
   },
 };
 
