@@ -31,6 +31,25 @@ class Settings(BaseSettings):
     debug: bool = True
     secret_key: str = "change-me-in-production"
 
+    # ── Security & Authentication ─────────────────────────────────────────────
+    auth_enabled: bool = False
+    access_token_expire_minutes: int = 1440
+    jwt_algorithm: str = "HS256"
+    admin_username: str = "admin"
+    admin_email: str = "admin@synq.local"
+    admin_initial_password: Optional[str] = None
+    admin_setup_token: Optional[str] = None
+
+    # ── Rate Limiting ─────────────────────────────────────────────────────────
+    rate_limit_enabled: bool = True
+    rate_limit_requests_per_minute: int = 120
+    rate_limit_auth_per_minute: int = 15
+    rate_limit_ai_per_minute: int = 20
+    trust_proxy_headers: bool = False
+
+    # ── Security Headers ──────────────────────────────────────────────────────
+    security_headers_enabled: bool = True
+
     # ── Database ──────────────────────────────────────────────────────────────
     database_url: str = "sqlite+aiosqlite:///./synq.db"
 

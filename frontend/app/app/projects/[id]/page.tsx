@@ -231,88 +231,103 @@ export default function ProjectWorkspacePage({
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <h1 className="font-serif" style={{ fontSize: '1.8rem', color: '#fff', margin: 0 }}>
+            <h1 className="font-serif" style={{ fontSize: '1.75rem', color: '#E6EDF3', margin: 0, fontWeight: 600 }}>
               {project.name}
             </h1>
             <span
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 700,
+                fontWeight: 500,
                 padding: '2px 8px',
                 borderRadius: '4px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: 'var(--accent-orange-light)',
+                background: '#1F242C',
+                color: '#E6EDF3',
+                border: '1px solid #2A313C',
               }}
             >
               {project.domain}
             </span>
             <span className={`badge badge-${project.status}`}>{project.status}</span>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '700px', margin: 0 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '700px', margin: 0 }}>
             {project.description || 'No description provided.'}
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button
             onClick={() => setShowExportModal(true)}
             className="btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <span>📦</span> Export Deliverables
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export deliverables
           </button>
           <button
             onClick={() => setActiveTab('planner')}
             className="btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.9rem' }}
+            style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            ✦ AI Planner
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            AI planner
           </button>
           <button
             onClick={() => setShowAddTaskModal(true)}
             className="btn-primary"
-            style={{ padding: '8px 18px', fontSize: '0.9rem' }}
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
           >
-            + Add Task
+            + Add task
           </button>
         </div>
       </div>
 
       {/* ── Tab Switcher ────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('board')}
           style={{
-            padding: '8px 18px',
+            padding: '6px 14px',
             borderRadius: '6px',
-            fontWeight: 600,
-            fontSize: '0.95rem',
-            background: activeTab === 'board' ? 'var(--accent-orange-subtle)' : 'transparent',
-            color: activeTab === 'board' ? 'var(--accent-orange)' : 'var(--text-muted)',
-            border: activeTab === 'board' ? '1px solid var(--accent-orange)' : '1px solid transparent',
+            fontWeight: 500,
+            fontSize: '0.85rem',
+            background: activeTab === 'board' ? '#161B22' : 'transparent',
+            color: activeTab === 'board' ? '#E6EDF3' : 'var(--text-muted)',
+            border: activeTab === 'board' ? '1px solid #2A313C' : '1px solid transparent',
             cursor: 'pointer',
+            fontVariantNumeric: 'tabular-nums',
           }}
         >
-          Task Board & Monitor ({tasks.length})
+          Task board ({tasks.length})
         </button>
 
         <button
           onClick={() => setActiveTab('dag')}
           style={{
-            padding: '8px 18px',
+            padding: '6px 14px',
             borderRadius: '6px',
-            fontWeight: 600,
-            fontSize: '0.95rem',
-            background: activeTab === 'dag' ? 'var(--accent-orange-subtle)' : 'transparent',
-            color: activeTab === 'dag' ? 'var(--accent-orange)' : 'var(--text-muted)',
-            border: activeTab === 'dag' ? '1px solid var(--accent-orange)' : '1px solid transparent',
+            fontWeight: 500,
+            fontSize: '0.85rem',
+            background: activeTab === 'dag' ? '#161B22' : 'transparent',
+            color: activeTab === 'dag' ? '#E6EDF3' : 'var(--text-muted)',
+            border: activeTab === 'dag' ? '1px solid #2A313C' : '1px solid transparent',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
           }}
         >
-          <span>🗺️</span> Interactive DAG Canvas
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="6" height="6" rx="1" />
+            <rect x="15" y="15" width="6" height="6" rx="1" />
+            <path d="M9 6h6v9" />
+          </svg>
+          DAG canvas
         </button>
 
         <button
@@ -321,44 +336,45 @@ export default function ProjectWorkspacePage({
             loadMemoryGraph();
           }}
           style={{
-            padding: '8px 18px',
+            padding: '6px 14px',
             borderRadius: '6px',
-            fontWeight: 600,
-            fontSize: '0.95rem',
-            background: activeTab === 'memory' ? 'var(--accent-orange-subtle)' : 'transparent',
-            color: activeTab === 'memory' ? 'var(--accent-orange)' : 'var(--text-muted)',
-            border: activeTab === 'memory' ? '1px solid var(--accent-orange)' : '1px solid transparent',
+            fontWeight: 500,
+            fontSize: '0.85rem',
+            background: activeTab === 'memory' ? '#161B22' : 'transparent',
+            color: activeTab === 'memory' ? '#E6EDF3' : 'var(--text-muted)',
+            border: activeTab === 'memory' ? '1px solid #2A313C' : '1px solid transparent',
             cursor: 'pointer',
+            fontVariantNumeric: 'tabular-nums',
           }}
         >
-          FalkorDB Memory Graph ({memoryGraph?.nodes.length || 0} Nodes)
+          Memory graph ({memoryGraph?.nodes.length || 0})
         </button>
 
         <button
           onClick={() => setActiveTab('planner')}
           style={{
-            padding: '8px 18px',
+            padding: '6px 14px',
             borderRadius: '6px',
-            fontWeight: 600,
-            fontSize: '0.95rem',
-            background: activeTab === 'planner' ? 'var(--accent-orange-subtle)' : 'transparent',
-            color: activeTab === 'planner' ? 'var(--accent-orange)' : 'var(--text-muted)',
-            border: activeTab === 'planner' ? '1px solid var(--accent-orange)' : '1px solid transparent',
+            fontWeight: 500,
+            fontSize: '0.85rem',
+            background: activeTab === 'planner' ? '#161B22' : 'transparent',
+            color: activeTab === 'planner' ? '#E6EDF3' : 'var(--text-muted)',
+            border: activeTab === 'planner' ? '1px solid #2A313C' : '1px solid transparent',
             cursor: 'pointer',
           }}
         >
-          AI Goal Decomposition
+          AI planner
         </button>
       </div>
 
       {/* ── TAB 1: TASK BOARD & MONITOR ─────────────────────────────────── */}
       {activeTab === 'board' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '24px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '20px', alignItems: 'start' }}>
           {/* Left Column: Task List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {tasks.length === 0 ? (
-              <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                No tasks yet. Use <strong>+ Add Task</strong> or the <strong>AI Planner</strong> to decompose goals.
+              <div className="glass-panel" style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                No tasks yet. Use <strong>+ Add task</strong> or the <strong>AI planner</strong> to decompose goals.
               </div>
             ) : (
               tasks.map((task, idx) => {
@@ -366,7 +382,6 @@ export default function ProjectWorkspacePage({
                 const isExecuting = executingTaskId === task.id;
                 const isAwaitingApproval = task.status === 'awaiting_approval';
                 const isRejected = task.status === 'rejected';
-                const isBlocked = task.status === 'blocked';
 
                 return (
                   <div
@@ -374,44 +389,35 @@ export default function ProjectWorkspacePage({
                     onClick={() => setSelectedTaskId(task.id)}
                     className="glass-panel"
                     style={{
-                      padding: '16px 20px',
+                      padding: '12px 16px',
                       cursor: 'pointer',
                       borderColor: isSelected
-                        ? 'var(--accent-orange)'
+                        ? '#F5B841'
                         : isAwaitingApproval
-                        ? '#f59e0b'
+                        ? '#6E4919'
                         : isRejected
-                        ? '#ef4444'
-                        : 'var(--border-subtle)',
+                        ? '#66242B'
+                        : '#2A313C',
                       background: isSelected
-                        ? 'rgba(240, 140, 0, 0.05)'
-                        : isAwaitingApproval
-                        ? 'rgba(245, 158, 11, 0.04)'
-                        : isRejected
-                        ? 'rgba(239, 68, 68, 0.04)'
-                        : 'var(--bg-card)',
-                      transition: 'all 0.15s ease',
-                      borderLeft: isAwaitingApproval
-                        ? '4px solid #f59e0b'
-                        : isRejected
-                        ? '4px solid #ef4444'
-                        : isBlocked
-                        ? '4px solid #6b7280'
-                        : undefined,
+                        ? 'rgba(245, 184, 65, 0.05)'
+                        : '#161B22',
+                      transition: 'border-color 0.12s ease',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>
                           #{idx + 1}
                         </span>
                         <span
                           style={{
-                            fontSize: '0.75rem',
+                            fontSize: '0.7rem',
                             padding: '2px 6px',
-                            borderRadius: '4px',
-                            background: 'rgba(255, 255, 255, 0.06)',
-                            color: 'var(--accent-orange-light)',
+                            borderRadius: '3px',
+                            fontFamily: 'monospace',
+                            background: '#1F242C',
+                            color: '#8B949E',
+                            border: '1px solid #2A313C',
                           }}
                         >
                           {task.task_type}
@@ -423,12 +429,12 @@ export default function ProjectWorkspacePage({
                       </span>
                     </div>
 
-                    <h4 style={{ fontSize: '1rem', color: '#fff', marginBottom: '6px' }}>{task.title}</h4>
+                    <h4 style={{ fontSize: '0.92rem', fontWeight: 600, color: '#E6EDF3', marginBottom: '4px' }}>{task.title}</h4>
 
                     {isAwaitingApproval && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                        <span style={{ fontSize: '0.78rem', color: '#fbbf24' }}>
-                          ⚠️ Operator Approval Required
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #2A313C', paddingTop: '8px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#F5B841' }}>
+                          Approval required
                         </span>
                         <button
                           onClick={(e) => {
@@ -438,26 +444,26 @@ export default function ProjectWorkspacePage({
                           }}
                           className="btn-primary"
                           style={{
-                            padding: '4px 10px',
+                            padding: '3px 8px',
                             fontSize: '0.75rem',
-                            background: '#f59e0b',
-                            color: '#000',
-                            fontWeight: 700,
+                            background: '#F5B841',
+                            color: '#0E1116',
+                            fontWeight: 600,
                           }}
                         >
-                          Review & Approve
+                          Review and approve
                         </button>
                       </div>
                     )}
 
                     {isRejected && task.rejection_reason && (
-                      <div style={{ fontSize: '0.75rem', color: '#fca5a5', marginTop: '6px' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#FCA5A5', marginTop: '6px' }}>
                         Rejection reason: {task.rejection_reason}
                       </div>
                     )}
 
                     {task.dependencies.length > 0 && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#8B949E', marginTop: '4px', fontVariantNumeric: 'tabular-nums' }}>
                         Depends on: {task.dependencies.length} tasks
                       </div>
                     )}
@@ -468,7 +474,7 @@ export default function ProjectWorkspacePage({
           </div>
 
           {/* Right Column: Execution Monitor & Detail */}
-          <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', background: '#161B22', border: '1px solid #2A313C' }}>
             {selectedTaskDetail ? (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -476,14 +482,14 @@ export default function ProjectWorkspacePage({
                     <span
                       style={{
                         fontSize: '0.75rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        color: 'var(--accent-orange)',
+                        fontWeight: 600,
+                        color: '#F5B841',
+                        letterSpacing: '0.02em',
                       }}
                     >
-                      Task Inspector
+                      Task inspector
                     </span>
-                    <h2 style={{ fontSize: '1.35rem', color: '#fff', marginTop: '4px' }}>
+                    <h2 style={{ fontSize: '1.25rem', color: '#E6EDF3', marginTop: '4px', fontWeight: 600 }}>
                       {selectedTaskDetail.title}
                     </h2>
                   </div>
@@ -496,9 +502,9 @@ export default function ProjectWorkspacePage({
                           setShowApprovalModal(true);
                         }}
                         className="btn-primary"
-                        style={{ padding: '6px 14px', fontSize: '0.85rem', background: '#f59e0b', color: '#000', fontWeight: 700 }}
+                        style={{ padding: '6px 14px', fontSize: '0.85rem', background: '#F5B841', color: '#0E1116', fontWeight: 600 }}
                       >
-                        ⚠️ Review & Approve
+                        Review and approve
                       </button>
                     )}
 
@@ -509,9 +515,9 @@ export default function ProjectWorkspacePage({
                           setShowApprovalModal(true);
                         }}
                         className="btn-secondary"
-                        style={{ padding: '6px 14px', fontSize: '0.85rem', color: '#fca5a5', borderColor: '#ef4444' }}
+                        style={{ padding: '6px 14px', fontSize: '0.85rem', color: '#FCA5A5', borderColor: '#66242B' }}
                       >
-                        ✏️ Edit & Resubmit
+                        Edit and resubmit
                       </button>
                     )}
 
@@ -522,13 +528,13 @@ export default function ProjectWorkspacePage({
                         className="btn-primary"
                         style={{ padding: '6px 16px', fontSize: '0.85rem' }}
                       >
-                        {executingTaskId === selectedTaskDetail.id ? 'Running Agent...' : '▶ Run Task'}
+                        {executingTaskId === selectedTaskDetail.id ? 'Running agent...' : 'Run task'}
                       </button>
                     )}
                   </div>
                 </div>
 
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                <div style={{ fontSize: '0.875rem', color: '#8B949E', lineHeight: 1.5 }}>
                   {selectedTaskDetail.description || 'No specific instructions provided.'}
                 </div>
 
@@ -536,14 +542,14 @@ export default function ProjectWorkspacePage({
                   <div
                     style={{
                       padding: '10px 14px',
-                      background: 'rgba(34, 197, 94, 0.08)',
-                      borderRadius: '8px',
-                      borderLeft: '3px solid #22c55e',
+                      background: '#0E2318',
+                      borderRadius: '6px',
+                      borderLeft: '3px solid #1D5A38',
                       fontSize: '0.85rem',
-                      color: '#86efac',
+                      color: '#86EFAC',
                     }}
                   >
-                    <strong>Operator Approval:</strong> {selectedTaskDetail.approval_reason} (Approved by: {selectedTaskDetail.approved_by || 'Human Operator'})
+                    <strong style={{ color: '#E6EDF3', fontWeight: 600 }}>Operator approval:</strong> {selectedTaskDetail.approval_reason} (Approved by: {selectedTaskDetail.approved_by || 'Human Operator'})
                   </div>
                 )}
 
@@ -551,14 +557,14 @@ export default function ProjectWorkspacePage({
                   <div
                     style={{
                       padding: '10px 14px',
-                      background: 'rgba(239, 68, 68, 0.08)',
-                      borderRadius: '8px',
-                      borderLeft: '3px solid #ef4444',
+                      background: '#291013',
+                      borderRadius: '6px',
+                      borderLeft: '3px solid #66242B',
                       fontSize: '0.85rem',
-                      color: '#fca5a5',
+                      color: '#FCA5A5',
                     }}
                   >
-                    <strong>Rejection Notice:</strong> {selectedTaskDetail.rejection_reason}
+                    <strong style={{ color: '#E6EDF3', fontWeight: 600 }}>Rejection notice:</strong> {selectedTaskDetail.rejection_reason}
                   </div>
                 )}
 
@@ -566,42 +572,46 @@ export default function ProjectWorkspacePage({
                   <div
                     style={{
                       padding: '10px 14px',
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '8px',
-                      borderLeft: '3px solid var(--accent-orange)',
+                      background: '#161B22',
+                      borderRadius: '6px',
+                      borderLeft: '3px solid #F5B841',
+                      borderTop: '1px solid #2A313C',
+                      borderRight: '1px solid #2A313C',
+                      borderBottom: '1px solid #2A313C',
                       fontSize: '0.85rem',
+                      color: '#E6EDF3',
                     }}
                   >
-                    <strong>Acceptance Criteria:</strong> {selectedTaskDetail.acceptance_criteria}
+                    <strong style={{ color: '#F5B841', fontWeight: 600 }}>Acceptance criteria:</strong> {selectedTaskDetail.acceptance_criteria}
                   </div>
                 )}
 
                 {/* Real-time Streaming Output / Output Box */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                      Agent Output {executingTaskId === selectedTaskDetail.id && '(Live Stream)'}
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', letterSpacing: '0.02em' }}>
+                      Agent output {executingTaskId === selectedTaskDetail.id && '(live stream)'}
                     </span>
                     {executingTaskId === selectedTaskDetail.id && (
-                      <span style={{ fontSize: '0.8rem', color: 'var(--status-running)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className="pulse-dot"></span> Streaming Tokens via WebSocket
+                      <span style={{ fontSize: '0.75rem', color: '#67E8F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="pulse-dot"></span> Streaming tokens via WebSocket
                       </span>
                     )}
                   </div>
 
                   <div
                     style={{
-                      background: '#0d1014',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: '8px',
-                      padding: '16px',
+                      background: '#0E1116',
+                      border: '1px solid #2A313C',
+                      borderRadius: '6px',
+                      padding: '14px',
                       minHeight: '180px',
                       maxHeight: '340px',
                       overflowY: 'auto',
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'monospace',
                       fontSize: '0.82rem',
                       lineHeight: 1.5,
-                      color: '#e6edf3',
+                      color: '#E6EDF3',
                       whiteSpace: 'pre-wrap',
                     }}
                   >
@@ -611,15 +621,15 @@ export default function ProjectWorkspacePage({
                       ? selectedTaskDetail.executions[0].output
                       : selectedTaskDetail.executions.length > 0 && selectedTaskDetail.executions[0].error_message
                       ? `Execution failed: ${selectedTaskDetail.executions[0].error_message}`
-                      : 'No execution output yet. Click "Run Task" to trigger routing and execution.'}
+                      : 'No execution output yet. Click "Run task" to trigger routing and execution.'}
                   </div>
                 </div>
 
                 {/* Routing & Execution History */}
                 {selectedTaskDetail.executions.length > 0 && (
-                  <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>
-                      Routing Decision & Quality Audit
+                  <div style={{ borderTop: '1px solid #2A313C', paddingTop: '16px' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', letterSpacing: '0.02em', marginBottom: '10px' }}>
+                      Routing decision and quality audit
                     </div>
                     {selectedTaskDetail.executions.map((ex) => {
                       const reviewData = ex.validation_result?.collaborative_review;
@@ -629,36 +639,37 @@ export default function ProjectWorkspacePage({
                           key={ex.id}
                           style={{
                             padding: '12px 14px',
-                            background: 'rgba(255, 255, 255, 0.03)',
-                            borderRadius: '8px',
+                            background: '#0E1116',
+                            border: '1px solid #2A313C',
+                            borderRadius: '6px',
                             marginBottom: '8px',
                             fontSize: '0.85rem',
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                             <span>
-                              Attempt #{ex.attempt}: <strong>{ex.provider_id}:{ex.model_id}</strong>
+                              Attempt #{ex.attempt}: <strong style={{ color: '#E6EDF3', fontWeight: 500 }}>{ex.provider_id}:{ex.model_id}</strong>
                             </span>
-                            <span style={{ color: ex.validation_passed ? 'var(--status-completed)' : 'var(--status-failed)' }}>
+                            <span style={{ color: ex.validation_passed ? '#86EFAC' : '#FCA5A5' }}>
                               {ex.validation_passed
-                                ? 'Validation: Passed ✓'
+                                ? 'Validation passed'
                                 : ex.error_message
-                                ? 'Execution Failed ✕'
-                                : 'Validation: Failed ✕'}
+                                ? 'Execution failed'
+                                : 'Validation failed'}
                             </span>
                           </div>
                           {ex.error_message && (
-                            <div style={{ fontSize: '0.8rem', color: 'var(--status-failed)', marginTop: '2px', marginBottom: '4px' }}>
+                            <div style={{ fontSize: '0.8rem', color: '#FCA5A5', marginTop: '2px', marginBottom: '4px' }}>
                               Error: {ex.error_message}
                             </div>
                           )}
                           {ex.routing_decision?.selection_reason && (
-                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                            <div style={{ fontSize: '0.78rem', color: '#8B949E' }}>
                               Router rationale: {ex.routing_decision.selection_reason}
                             </div>
                           )}
                           {ex.is_fallback && (
-                            <div style={{ fontSize: '0.78rem', color: 'var(--accent-orange-light)', marginTop: '4px' }}>
+                            <div style={{ fontSize: '0.78rem', color: '#FDE68A', marginTop: '4px' }}>
                               Fallback triggered: {ex.fallback_reason}
                             </div>
                           )}
@@ -671,17 +682,17 @@ export default function ProjectWorkspacePage({
                                 padding: '8px 10px',
                                 borderRadius: '6px',
                                 background: reviewData.action === 'accept'
-                                  ? 'rgba(34, 197, 94, 0.08)'
-                                  : 'rgba(245, 158, 11, 0.08)',
-                                border: `1px solid ${reviewData.action === 'accept' ? 'rgba(34, 197, 94, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
+                                  ? '#0E2318'
+                                  : '#261B0E',
+                                border: `1px solid ${reviewData.action === 'accept' ? '#1D5A38' : '#6E4919'}`,
                                 fontSize: '0.78rem',
                               }}
                             >
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
-                                <span>🤖 Collaborative Peer Review ({reviewData.reviewer_provider})</span>
-                                <span style={{ textTransform: 'uppercase' }}>{reviewData.action}</span>
+                                <span>Collaborative peer review ({reviewData.reviewer_provider})</span>
+                                <span>{reviewData.action}</span>
                               </div>
-                              <div style={{ marginTop: '2px', color: 'var(--text-secondary)' }}>
+                              <div style={{ marginTop: '2px', color: '#8B949E' }}>
                                 {reviewData.feedback}
                               </div>
                             </div>
@@ -724,31 +735,31 @@ export default function ProjectWorkspacePage({
 
       {/* ── TAB 3: AI PLANNER ───────────────────────────────────────────── */}
       {activeTab === 'planner' && (
-        <div className="glass-panel" style={{ padding: '36px', maxWidth: '800px', margin: '0 auto' }}>
-          <h2 className="font-serif" style={{ fontSize: '1.6rem', color: '#fff', marginBottom: '8px' }}>
-            ✦ AI Goal Decomposition & DAG Planning
+        <div className="glass-panel" style={{ padding: '32px', maxWidth: '800px', margin: '0 auto', background: '#161B22', border: '1px solid #2A313C' }}>
+          <h2 className="font-serif" style={{ fontSize: '1.5rem', color: '#E6EDF3', marginBottom: '8px', fontWeight: 600 }}>
+            AI goal decomposition and DAG planning
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '24px', lineHeight: 1.5 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '20px', lineHeight: 1.5 }}>
             Describe a high-level feature or project objective. SYNQ&apos;s Planner will automatically break it into a
             topological Directed Acyclic Graph (DAG) with dependency ordering and domain-tailored acceptance criteria.
           </p>
 
           {planSuccessMsg && (
-            <div style={{ padding: '12px 16px', background: 'rgba(81, 207, 102, 0.15)', color: 'var(--status-completed)', borderRadius: '8px', marginBottom: '20px' }}>
-              ✓ {planSuccessMsg}
+            <div style={{ padding: '10px 14px', background: '#0E2318', border: '1px solid #1D5A38', color: '#86EFAC', borderRadius: '6px', marginBottom: '16px', fontSize: '0.85rem' }}>
+              {planSuccessMsg}
             </div>
           )}
 
           {planErrorMsg && (
-            <div style={{ padding: '12px 16px', background: 'rgba(235, 87, 87, 0.15)', color: '#ff6b6b', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              ⚠ {planErrorMsg}
+            <div style={{ padding: '10px 14px', background: '#291013', border: '1px solid #66242B', color: '#FCA5A5', borderRadius: '6px', marginBottom: '16px', fontSize: '0.85rem', lineHeight: 1.5 }}>
+              {planErrorMsg}
             </div>
           )}
 
           <form onSubmit={handleRunPlanner} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                Project Objective / Goal
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: '#8B949E', marginBottom: '6px' }}>
+                Project objective / goal
               </label>
               <textarea
                 rows={4}
@@ -758,12 +769,12 @@ export default function ProjectWorkspacePage({
                 onChange={(e) => setPlannerGoal(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '12px 16px',
-                  background: 'var(--bg-secondary)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
-                  color: '#fff',
-                  fontSize: '0.95rem',
+                  padding: '10px 14px',
+                  background: '#0E1116',
+                  border: '1px solid #2A313C',
+                  borderRadius: '6px',
+                  color: '#E6EDF3',
+                  fontSize: '0.875rem',
                   resize: 'vertical',
                 }}
               />
@@ -773,9 +784,9 @@ export default function ProjectWorkspacePage({
               type="submit"
               disabled={planning}
               className="btn-primary"
-              style={{ alignSelf: 'flex-start', padding: '12px 28px' }}
+              style={{ alignSelf: 'flex-start', padding: '8px 20px', fontSize: '0.85rem' }}
             >
-              {planning ? 'Decomposing Goal with AI...' : 'Decompose Goal into DAG Subtasks →'}
+              {planning ? 'Decomposing goal with AI...' : 'Decompose goal into DAG subtasks'}
             </button>
           </form>
         </div>
@@ -792,14 +803,15 @@ export default function ProjectWorkspacePage({
               minHeight: '520px',
               display: 'flex',
               flexDirection: 'column',
-              background: '#0d1014',
+              background: '#161B22',
+              border: '1px solid #2A313C',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                FalkorDB Continuous Memory Graph
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', letterSpacing: '0.02em' }}>
+                Continuous memory graph
               </span>
-              <span className="badge badge-completed">Live Graph</span>
+              <span className="badge badge-completed">Live graph</span>
             </div>
 
             {memoryGraph && memoryGraph.nodes.length > 0 ? (
@@ -833,17 +845,17 @@ export default function ProjectWorkspacePage({
                         onClick={() => setSelectedGraphNode(node)}
                         style={{
                           padding: '12px 14px',
-                          background: isSelected ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
-                          border: `1px solid ${isSelected ? color : 'var(--border-subtle)'}`,
-                          borderRadius: '8px',
+                          background: isSelected ? '#1F242C' : '#0E1116',
+                          border: `1px solid ${isSelected ? color : '#2A313C'}`,
+                          borderRadius: '6px',
                           cursor: 'pointer',
-                          transition: 'all 0.15s ease',
+                          transition: 'border-color 0.15s ease',
                         }}
                       >
-                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color, textTransform: 'uppercase' }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color }}>
                           {node.label}
                         </div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 500, color: '#E6EDF3', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {node.name || node.title || node.description || node.id}
                         </div>
                       </div>
@@ -852,37 +864,37 @@ export default function ProjectWorkspacePage({
                 </div>
               </div>
             ) : (
-              <div style={{ margin: 'auto', textAlign: 'center', color: 'var(--text-muted)' }}>
-                No graph nodes committed yet. Run tasks to populate FalkorDB with persistent artifacts and execution decisions.
+              <div style={{ margin: 'auto', textAlign: 'center', color: '#8B949E', fontSize: '0.875rem' }}>
+                No graph nodes committed yet. Run tasks to populate persistent artifacts and execution decisions.
               </div>
             )}
           </div>
 
           {/* Right Column: Node Inspector */}
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Memory Node Inspector
+          <div className="glass-panel" style={{ padding: '24px', background: '#161B22', border: '1px solid #2A313C' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', letterSpacing: '0.02em' }}>
+              Memory node inspector
             </span>
 
             {selectedGraphNode ? (
               <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
                   <span className="badge badge-completed">{selectedGraphNode.label}</span>
-                  <h3 style={{ fontSize: '1.2rem', color: '#fff', marginTop: '8px' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: '#E6EDF3', marginTop: '8px', fontWeight: 600 }}>
                     {selectedGraphNode.name || selectedGraphNode.title || selectedGraphNode.id}
                   </h3>
                 </div>
 
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '0.8rem', color: '#8B949E', fontFamily: 'monospace' }}>
                   ID: {selectedGraphNode.id}
                 </div>
 
                 {selectedGraphNode.preview && (
                   <div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                      Artifact Content Preview:
+                    <div style={{ fontSize: '0.75rem', color: '#8B949E', marginBottom: '4px' }}>
+                      Artifact content preview:
                     </div>
-                    <div style={{ background: '#090b0e', padding: '12px', borderRadius: '6px', fontSize: '0.8rem', color: '#a5d8ff', whiteSpace: 'pre-wrap' }}>
+                    <div style={{ background: '#0E1116', border: '1px solid #2A313C', padding: '12px', borderRadius: '6px', fontSize: '0.8rem', color: '#E6EDF3', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
                       {selectedGraphNode.preview}
                     </div>
                   </div>
@@ -890,17 +902,17 @@ export default function ProjectWorkspacePage({
 
                 {selectedGraphNode.rationale && (
                   <div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                      Decision Rationale:
+                    <div style={{ fontSize: '0.75rem', color: '#8B949E', marginBottom: '4px' }}>
+                      Decision rationale:
                     </div>
-                    <div style={{ background: '#090b0e', padding: '12px', borderRadius: '6px', fontSize: '0.8rem', color: '#ffd43b' }}>
+                    <div style={{ background: '#0E1116', border: '1px solid #2A313C', padding: '12px', borderRadius: '6px', fontSize: '0.8rem', color: '#FDE68A' }}>
                       {selectedGraphNode.rationale}
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: '#8B949E', fontSize: '0.85rem' }}>
                 Click any node in the graph to inspect its memory attributes and context lineage.
               </div>
             )}
@@ -940,8 +952,8 @@ export default function ProjectWorkspacePage({
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(8px)',
+            background: 'rgba(0, 0, 0, 0.65)',
+            backdropFilter: 'blur(4px)',
             zIndex: 100,
             display: 'flex',
             alignItems: 'center',
@@ -949,66 +961,68 @@ export default function ProjectWorkspacePage({
             padding: '20px',
           }}
         >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '30px', background: 'var(--bg-secondary)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 className="font-serif" style={{ fontSize: '1.4rem', color: '#fff', margin: 0 }}>Add New Task</h2>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '24px', background: '#161B22', border: '1px solid #2A313C', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 className="font-serif" style={{ fontSize: '1.25rem', color: '#E6EDF3', margin: 0, fontWeight: 600 }}>Add new task</h2>
               <button
                 onClick={() => setShowAddTaskModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.4rem', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: '#8B949E', fontSize: '1.25rem', cursor: 'pointer', lineHeight: 1 }}
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateTask} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleCreateTask} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                  Task Title *
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: '#8B949E', marginBottom: '4px' }}>
+                  Task title *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Implement FalkorDB Graph Service"
+                  placeholder="e.g. Implement FalkorDB graph service"
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    color: '#fff',
+                    padding: '8px 12px',
+                    background: '#0E1116',
+                    border: '1px solid #2A313C',
+                    borderRadius: '6px',
+                    color: '#E6EDF3',
+                    fontSize: '0.85rem',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                  Task Type
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: '#8B949E', marginBottom: '4px' }}>
+                  Task type
                 </label>
                 <select
                   value={newTaskType}
                   onChange={(e) => setNewTaskType(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    color: '#fff',
+                    padding: '8px 12px',
+                    background: '#0E1116',
+                    border: '1px solid #2A313C',
+                    borderRadius: '6px',
+                    color: '#E6EDF3',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <option value="code">Code (Specialized LLM)</option>
-                  <option value="research">Research & Citations</option>
-                  <option value="write">Documentation & Writing</option>
-                  <option value="analyze">Analysis & Planning</option>
-                  <option value="general">General Objective</option>
+                  <option value="code">Code (specialized LLM)</option>
+                  <option value="research">Research and citations</option>
+                  <option value="write">Documentation and writing</option>
+                  <option value="analyze">Analysis and planning</option>
+                  <option value="general">General objective</option>
                 </select>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                  Description / Prompt
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 500, color: '#8B949E', marginBottom: '4px' }}>
+                  Description / prompt
                 </label>
                 <textarea
                   rows={3}
@@ -1017,11 +1031,12 @@ export default function ProjectWorkspacePage({
                   onChange={(e) => setNewTaskDesc(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    color: '#fff',
+                    padding: '8px 12px',
+                    background: '#0E1116',
+                    border: '1px solid #2A313C',
+                    borderRadius: '6px',
+                    color: '#E6EDF3',
+                    fontSize: '0.85rem',
                     resize: 'vertical',
                   }}
                 />
@@ -1034,17 +1049,17 @@ export default function ProjectWorkspacePage({
                   checked={newTaskApproval}
                   onChange={(e) => setNewTaskApproval(e.target.checked)}
                 />
-                <label htmlFor="approvalCheck" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <label htmlFor="approvalCheck" style={{ fontSize: '0.85rem', color: '#8B949E' }}>
                   Require human approval before execution
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
-                <button type="button" onClick={() => setShowAddTaskModal(false)} className="btn-secondary">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                <button type="button" onClick={() => setShowAddTaskModal(false)} className="btn-secondary" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
-                  Create Task
+                <button type="submit" className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
+                  Create task
                 </button>
               </div>
             </form>

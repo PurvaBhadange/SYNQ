@@ -9,14 +9,16 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
+from core.auth import get_current_user
 from core.coordinator import coordinator
 from core.planner import planner
-from db.models import Project, Task, TaskExecution, TaskStatus, TaskType
+from core.security import sanitize_text
+from db.models import Project, Task, TaskExecution, TaskStatus, TaskType, User, UserRole
 from db.session import get_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from memory.memory_service import memory_service
 from memory.falkordb_client import FalkorDBConnectionError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -37,10 +39,36 @@ class TaskCreate(BaseModel):
     dependencies: Optional[List[str]] = Field(default_factory=list)
     requires_approval: bool = False
 
+    @field_validator("title")
+    @classmethod
+    def sanitize_title(cls, v: str) -> str:
+        cleaned = sanitize_text(v, max_length=500)
+        if not cleaned:
+            raise ValueError("Task title cannot be empty.")
+        return cleaned
+
+    @field_validator("description")
+    @classmethod
+    def sanitize_description(cls, v: Optional[str]) -> Optional[str]:
+        return sanitize_text(v, max_length=5000)
+
+    @field_validator("acceptance_criteria")
+    @classmethod
+    def sanitize_criteria(cls, v: Optional[str]) -> Optional[str]:
+        return sanitize_text(v, max_length=5000)
+
 
 class PlanRequest(BaseModel):
     goal: str = Field(..., min_length=5)
     domain: Optional[str] = None
+
+    @field_validator("goal")
+    @classmethod
+    def sanitize_goal(cls, v: str) -> str:
+        cleaned = sanitize_text(v, max_length=5000)
+        if not cleaned:
+            raise ValueError("Planning goal cannot be empty.")
+        return cleaned
 
 
 class ExecuteRequest(BaseModel):
@@ -54,10 +82,23 @@ class TaskApprovalRequest(BaseModel):
     user_override_provider: Optional[str] = None
     user_override_model: Optional[str] = None
 
+    @field_validator("reason")
+    @classmethod
+    def sanitize_reason(cls, v: Optional[str]) -> Optional[str]:
+        return sanitize_text(v, max_length=1000)
+
 
 class TaskRejectionRequest(BaseModel):
     reason: str = Field(..., min_length=1, description="Reason for rejection")
     approver: Optional[str] = "Human Operator"
+
+    @field_validator("reason")
+    @classmethod
+    def sanitize_reason(cls, v: str) -> str:
+        cleaned = sanitize_text(v, max_length=1000)
+        if not cleaned:
+            raise ValueError("Rejection reason cannot be empty.")
+        return cleaned
 
 
 class TaskEditRequest(BaseModel):
@@ -68,6 +109,21 @@ class TaskEditRequest(BaseModel):
     priority: Optional[int] = Field(default=None, ge=1, le=10)
     dependencies: Optional[List[str]] = None
     requires_approval: Optional[bool] = None
+
+    @field_validator("title")
+    @classmethod
+    def sanitize_title(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        cleaned = sanitize_text(v, max_length=500)
+        if not cleaned:
+            raise ValueError("Task title cannot be empty.")
+        return cleaned
+
+    @field_validator("description", "acceptance_criteria")
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        return sanitize_text(v, max_length=5000)
 
 
 class TaskResponse(BaseModel):
@@ -93,11 +149,49 @@ class TaskResponse(BaseModel):
     completed_at: Optional[str]
 
 
+# ── Authorization Helpers ─────────────────────────────────────────────────────
+
+async def verify_project_access(
+    project_id: str,
+    db: AsyncSession,
+    current_user: Optional[User],
+) -> Project:
+    """Enforce project ownership / tenant isolation."""
+    project = await db.get(Project, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if isinstance(current_user, User) and current_user.role != UserRole.ADMIN.value:
+        if project.owner_id and project.owner_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Forbidden: You do not have permission to access tasks in this project.",
+            )
+    return project
+
+
+async def verify_task_access(
+    task_id: str,
+    db: AsyncSession,
+    current_user: Optional[User],
+) -> Task:
+    """Enforce task ownership by verifying access to its parent project."""
+    task = await db.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
+    await verify_project_access(task.project_id, db, current_user)
+    return task
+
+
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.get("/projects/{project_id}/tasks", response_model=List[TaskResponse])
-async def list_project_tasks(project_id: str, db: AsyncSession = Depends(get_db)):
-    """List all tasks belonging to a project."""
+async def list_project_tasks(
+    project_id: str,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """List all tasks belonging to a project with authorization."""
+    await verify_project_access(project_id, db, current_user)
     res = await db.execute(
         select(Task)
         .where(Task.project_id == project_id)
@@ -135,13 +229,11 @@ async def list_project_tasks(project_id: str, db: AsyncSession = Depends(get_db)
 async def create_task(
     project_id: str,
     payload: TaskCreate,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create a new task in a project."""
-    p_res = await db.execute(select(Project).where(Project.id == project_id))
-    project = p_res.scalar_one_or_none()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    """Create a new task in a project with authorization."""
+    project = await verify_project_access(project_id, db, current_user)
 
     task = Task(
         project_id=project_id,
@@ -201,13 +293,11 @@ async def create_task(
 async def plan_project(
     project_id: str,
     payload: PlanRequest,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Decompose high-level goal into DAG of tasks using deterministic planner."""
-    p_res = await db.execute(select(Project).where(Project.id == project_id))
-    project = p_res.scalar_one_or_none()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    """Decompose high-level goal into DAG of tasks with authorization."""
+    project = await verify_project_access(project_id, db, current_user)
 
     domain = payload.domain or project.domain
     plan_result = await planner.plan(goal=payload.goal, domain=domain)
@@ -271,8 +361,14 @@ async def plan_project(
 
 
 @router.post("/tasks/{task_id}/execute")
-async def execute_task_endpoint(task_id: str, payload: Optional[ExecuteRequest] = None):
-    """Trigger execution of a task with routing, streaming, and validation."""
+async def execute_task_endpoint(
+    task_id: str,
+    payload: Optional[ExecuteRequest] = None,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Trigger execution of a task with routing, streaming, and authorization."""
+    await verify_task_access(task_id, db, current_user)
     override_p = payload.user_override_provider if payload else None
     override_m = payload.user_override_model if payload else None
 
@@ -285,14 +381,15 @@ async def execute_task_endpoint(task_id: str, payload: Optional[ExecuteRequest] 
 
 
 @router.get("/tasks/{task_id}/approval_context")
-async def get_task_approval_context(task_id: str, db: AsyncSession = Depends(get_db)):
+async def get_task_approval_context(
+    task_id: str,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """
-    Retrieve comprehensive approval context for human-in-the-loop review:
-    - Task details & objective
-    - Upstream dependency outputs
-    - Provider assignment and proposed action
-    - Potential risk analysis
+    Retrieve comprehensive approval context for human-in-the-loop review with authorization.
     """
+    await verify_task_access(task_id, db, current_user)
     res = await db.execute(
         select(Task)
         .options(selectinload(Task.executions))
@@ -366,21 +463,13 @@ async def get_task_approval_context(task_id: str, db: AsyncSession = Depends(get
 async def approve_task(
     task_id: str,
     payload: Optional[TaskApprovalRequest] = None,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Approve a task that was awaiting human approval.
-    Enforces:
-    - State transition check (task MUST be in awaiting_approval status).
-    - Prevents duplicate approval requests or approval of running/completed tasks.
-    - Validates upstream dependencies before execution.
-    - Records audit log (approver, reason, timestamp).
-    - Executes via coordinator with audit log persisted.
+    Approve a task that was awaiting human approval with authorization.
     """
-    res = await db.execute(select(Task).where(Task.id == task_id))
-    task = res.scalar_one_or_none()
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+    task = await verify_task_access(task_id, db, current_user)
 
     # Protection against duplicate approval and invalid state transitions
     current_status = task.status.value if hasattr(task.status, "value") else str(task.status)
@@ -448,19 +537,13 @@ async def approve_task(
 async def reject_task(
     task_id: str,
     payload: TaskRejectionRequest,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Reject a pending or awaiting-approval task.
-    Enforces:
-    - Rejection is recorded with explicit reason.
-    - Prevents downstream execution by marking dependent tasks BLOCKED.
-    - Rejects invalid state transitions (cannot reject running or completed tasks).
+    Reject a pending or awaiting-approval task with authorization.
     """
-    res = await db.execute(select(Task).where(Task.id == task_id))
-    task = res.scalar_one_or_none()
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+    task = await verify_task_access(task_id, db, current_user)
 
     current_status = task.status.value if hasattr(task.status, "value") else str(task.status)
     if current_status in (TaskStatus.RUNNING.value, TaskStatus.COMPLETED.value):
@@ -510,16 +593,13 @@ async def reject_task(
 async def edit_and_resubmit_task(
     task_id: str,
     payload: TaskEditRequest,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Edit and resubmit a task (especially useful after rejection or awaiting approval).
-    Allows modifying title, description, criteria, priority, and resubmitting.
+    Edit and resubmit a task with authorization.
     """
-    res = await db.execute(select(Task).where(Task.id == task_id))
-    task = res.scalar_one_or_none()
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+    task = await verify_task_access(task_id, db, current_user)
 
     current_status = task.status.value if hasattr(task.status, "value") else str(task.status)
     if current_status in (TaskStatus.RUNNING.value, TaskStatus.COMPLETED.value):
@@ -598,8 +678,13 @@ async def edit_and_resubmit_task(
 
 
 @router.get("/tasks/{task_id}/detail")
-async def get_task_detail(task_id: str, db: AsyncSession = Depends(get_db)):
-    """Get full task details including executions and routing decisions."""
+async def get_task_detail(
+    task_id: str,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get full task details including executions and routing decisions with authorization."""
+    await verify_task_access(task_id, db, current_user)
     res = await db.execute(
         select(Task)
         .options(selectinload(Task.executions).selectinload(TaskExecution.routing_decision))
@@ -683,11 +768,16 @@ def check_dependency_cycle(tasks_deps: Dict[str, List[str]], task_id: str, dep_i
 
 
 @router.get("/projects/{project_id}/dag")
-async def get_project_dag(project_id: str, db: AsyncSession = Depends(get_db)):
+async def get_project_dag(
+    project_id: str,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """
-    Returns the authoritative DAG representation for visual canvas:
+    Returns the authoritative DAG representation for visual canvas with authorization:
     nodes, edges, execution order, and topological validity.
     """
+    await verify_project_access(project_id, db, current_user)
     res = await db.execute(
         select(Task)
         .where(Task.project_id == project_id)
@@ -775,12 +865,14 @@ async def get_project_dag(project_id: str, db: AsyncSession = Depends(get_db)):
 async def add_task_dependency(
     project_id: str,
     payload: DependencyModificationRequest,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Add a dependency edge between two tasks in the project.
+    Add a dependency edge between two tasks in the project with authorization.
     Strictly prevents circular dependencies and invalid task associations.
     """
+    await verify_project_access(project_id, db, current_user)
     if payload.task_id == payload.depends_on_task_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -855,9 +947,11 @@ async def add_task_dependency(
 async def remove_task_dependency(
     project_id: str,
     payload: DependencyModificationRequest,
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Remove a dependency edge between two tasks."""
+    """Remove a dependency edge between two tasks with authorization."""
+    await verify_project_access(project_id, db, current_user)
     t1_res = await db.execute(
         select(Task).where(Task.id == payload.task_id, Task.project_id == project_id)
     )

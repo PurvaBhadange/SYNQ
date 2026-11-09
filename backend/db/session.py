@@ -77,15 +77,26 @@ async def init_db() -> None:
     """
     Create all tables on startup if they don't exist and migrate missing columns.
     """
-    from db.models import Base
+    from db.models import Base, User, UserRole
     from sqlalchemy import text
+    from core.security import hash_password
 
     async with engine.begin() as conn:
+        # Enforce SQLite foreign keys and WAL mode for reliability and security
+        if settings.database_url.startswith("sqlite"):
+            try:
+                await conn.execute(text("PRAGMA foreign_keys = ON"))
+                await conn.execute(text("PRAGMA journal_mode = WAL"))
+                await conn.execute(text("PRAGMA synchronous = NORMAL"))
+            except Exception:
+                pass
+
         await conn.run_sync(Base.metadata.create_all)
 
         # Non-destructive schema synchronization for SQLite
         if settings.database_url.startswith("sqlite"):
             try:
+                # Migrate tasks columns
                 cursor_res = await conn.execute(text("PRAGMA table_info(tasks)"))
                 cols = [row[1] for row in cursor_res.fetchall()]
                 if "approval_reason" not in cols:
@@ -96,5 +107,12 @@ async def init_db() -> None:
                     await conn.execute(text("ALTER TABLE tasks ADD COLUMN approved_at TIMESTAMP"))
                 if "approved_by" not in cols:
                     await conn.execute(text("ALTER TABLE tasks ADD COLUMN approved_by VARCHAR(100)"))
+
+                # Migrate projects columns
+                p_res = await conn.execute(text("PRAGMA table_info(projects)"))
+                p_cols = [row[1] for row in p_res.fetchall()]
+                if "owner_id" not in p_cols:
+                    await conn.execute(text("ALTER TABLE projects ADD COLUMN owner_id VARCHAR(36)"))
             except Exception as exc:
                 pass
+

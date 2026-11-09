@@ -35,67 +35,67 @@ interface DagCanvasProps {
 // Status color palette & icon config
 const STATUS_CONFIG: Record<string, { bg: string; border: string; text: string; glow: string; label: string }> = {
   pending: {
-    bg: '#1e222d',
-    border: '#475569',
-    text: '#94a3b8',
+    bg: '#12151B',
+    border: '#2A313C',
+    text: '#8B949E',
     glow: 'none',
-    label: 'PENDING',
+    label: 'Pending',
   },
   assigned: {
-    bg: '#172554',
-    border: '#3b82f6',
-    text: '#93c5fd',
-    glow: '0 0 12px rgba(59, 130, 246, 0.4)',
-    label: 'QUEUED',
+    bg: '#131B2E',
+    border: '#294372',
+    text: '#93C5FD',
+    glow: 'none',
+    label: 'Queued',
   },
   running: {
-    bg: '#083344',
-    border: '#06b6d4',
-    text: '#67e8f9',
-    glow: '0 0 16px rgba(6, 182, 212, 0.6)',
-    label: 'RUNNING',
+    bg: '#0C2434',
+    border: '#195679',
+    text: '#67E8F9',
+    glow: 'none',
+    label: 'Running',
   },
   validating: {
-    bg: '#2e1065',
-    border: '#a855f7',
-    text: '#d8b4fe',
-    glow: '0 0 14px rgba(168, 85, 247, 0.5)',
-    label: 'VALIDATING',
+    bg: '#1E1533',
+    border: '#482E78',
+    text: '#D8B4FE',
+    glow: 'none',
+    label: 'Validating',
   },
   completed: {
-    bg: '#052e16',
-    border: '#22c55e',
-    text: '#86efac',
-    glow: '0 0 12px rgba(34, 197, 94, 0.4)',
-    label: 'COMPLETED',
+    bg: '#0E2318',
+    border: '#1D5A38',
+    text: '#86EFAC',
+    glow: 'none',
+    label: 'Completed',
   },
   failed: {
-    bg: '#450a0a',
-    border: '#ef4444',
-    text: '#fca5a5',
-    glow: '0 0 14px rgba(239, 68, 68, 0.5)',
-    label: 'FAILED',
+    bg: '#291013',
+    border: '#66242B',
+    text: '#FCA5A5',
+    glow: 'none',
+    label: 'Failed',
   },
   awaiting_approval: {
-    bg: '#451a03',
-    border: '#f59e0b',
-    text: '#fde68a',
-    glow: '0 0 18px rgba(245, 158, 11, 0.6)',
-    label: 'APPROVAL REQ',
+    bg: '#261B0E',
+    border: '#6E4919',
+    text: '#FDE68A',
+    glow: 'none',
+    label: 'Approval required',
   },
   rejected: {
-    bg: '#2d0607',
-    border: '#b91c1c',
-    text: '#fca5a5',
+    bg: '#231215',
+    border: '#542026',
+    text: '#FCA5A5',
     glow: 'none',
-    label: 'REJECTED',
+    label: 'Rejected',
   },
   blocked: {
-    bg: '#18181b',
-    border: '#71717a',
-    text: '#a1a1aa',
+    bg: '#16191F',
+    border: '#2B313A',
+    text: '#8B949E',
     glow: 'none',
-    label: 'BLOCKED',
+    label: 'Blocked',
   },
 };
 
@@ -321,7 +321,7 @@ export default function DagCanvas({
             markerHeight="7"
             orient="auto-start-reverse"
           >
-            <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#f5b841" />
           </marker>
         </defs>
         <rect width="100%" height="100%" fill="url(#dag-grid)" />
@@ -336,11 +336,10 @@ export default function DagCanvas({
           zIndex: 10,
           display: 'flex',
           gap: '0.5rem',
-          backgroundColor: 'rgba(18, 20, 26, 0.85)',
-          backdropFilter: 'blur(8px)',
-          padding: '0.4rem',
+          backgroundColor: '#161B22',
+          padding: '0.25rem 0.5rem',
           borderRadius: '8px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid #2A313C',
         }}
       >
         <button
@@ -350,10 +349,10 @@ export default function DagCanvas({
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#e2e8f0',
-            padding: '0.3rem 0.6rem',
+            color: '#E6EDF3',
+            padding: '0.25rem 0.5rem',
             cursor: 'pointer',
-            fontWeight: 700,
+            fontWeight: 600,
             fontSize: '1rem',
           }}
         >
@@ -366,10 +365,10 @@ export default function DagCanvas({
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#e2e8f0',
-            padding: '0.3rem 0.6rem',
+            color: '#E6EDF3',
+            padding: '0.25rem 0.5rem',
             cursor: 'pointer',
-            fontWeight: 700,
+            fontWeight: 600,
             fontSize: '1rem',
           }}
         >
@@ -378,18 +377,18 @@ export default function DagCanvas({
         <button
           type="button"
           onClick={fitToView}
-          title="Fit to View"
+          title="Fit to view"
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#94a3b8',
-            padding: '0.3rem 0.6rem',
+            color: '#8B949E',
+            padding: '0.25rem 0.5rem',
             cursor: 'pointer',
             fontSize: '0.8rem',
-            fontWeight: 600,
+            fontWeight: 500,
           }}
         >
-          Fit View
+          Fit view
         </button>
         <button
           type="button"
@@ -397,19 +396,19 @@ export default function DagCanvas({
             setDepError(null);
             setShowDepModal(true);
           }}
-          title="Add Dependency Edge"
+          title="Add dependency edge"
           style={{
-            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-            border: '1px solid rgba(59, 130, 246, 0.5)',
-            color: '#60a5fa',
-            padding: '0.3rem 0.8rem',
+            backgroundColor: '#1F242C',
+            border: '1px solid #2A313C',
+            color: '#E6EDF3',
+            padding: '0.25rem 0.75rem',
             borderRadius: '6px',
             cursor: 'pointer',
             fontSize: '0.8rem',
-            fontWeight: 600,
+            fontWeight: 500,
           }}
         >
-          + Add Dependency
+          + Add dependency
         </button>
       </div>
 
@@ -423,29 +422,28 @@ export default function DagCanvas({
           display: 'flex',
           gap: '0.75rem',
           flexWrap: 'wrap',
-          backgroundColor: 'rgba(18, 20, 26, 0.85)',
-          backdropFilter: 'blur(8px)',
-          padding: '0.5rem 0.8rem',
+          backgroundColor: '#161B22',
+          padding: '0.5rem 0.75rem',
           borderRadius: '8px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid #2A313C',
           fontSize: '0.75rem',
-          color: '#94a3b8',
+          color: '#8B949E',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} /> Completed
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#06b6d4' }} /> Running
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} /> Awaiting Approval
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f5b841' }} /> Approval required
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }} /> Failed/Rejected
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }} /> Failed / rejected
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#71717a' }} /> Blocked
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#8B949E' }} /> Blocked
         </div>
       </div>
 
@@ -490,13 +488,12 @@ export default function DagCanvas({
                 key={edge.id}
                 d={pathData}
                 fill="none"
-                stroke={isHighlighted ? '#38bdf8' : 'rgba(100, 116, 139, 0.4)'}
-                strokeWidth={isHighlighted ? 3 : 1.8}
-                strokeDasharray={isHighlighted ? 'none' : 'none'}
+                stroke={isHighlighted ? '#f5b841' : '#2A313C'}
+                strokeWidth={isHighlighted ? 2 : 1.5}
+                strokeDasharray="none"
                 markerEnd={isHighlighted ? 'url(#dag-arrow-active)' : 'url(#dag-arrow)'}
                 style={{
-                  transition: 'stroke 0.2s, stroke-width 0.2s',
-                  filter: isHighlighted ? 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' : 'none',
+                  transition: 'stroke 0.15s, stroke-width 0.15s',
                 }}
               />
             );
@@ -526,19 +523,19 @@ export default function DagCanvas({
                 left: `${pos.x}px`,
                 top: `${pos.y}px`,
                 width: '220px',
-                padding: '0.85rem',
+                padding: '0.75rem',
                 borderRadius: '8px',
                 backgroundColor: cfg.bg,
-                border: `1.5px solid ${isSelected ? '#38bdf8' : cfg.border}`,
+                border: `1px solid ${isSelected ? '#f5b841' : cfg.border}`,
                 boxShadow: isSelected
-                  ? '0 0 20px rgba(56, 189, 248, 0.6)'
+                  ? '0 0 0 1px #f5b841, 0 4px 12px rgba(0, 0, 0, 0.4)'
                   : isHovered
-                  ? cfg.glow
-                  : '0 4px 10px rgba(0, 0, 0, 0.5)',
-                color: '#f8fafc',
+                  ? '0 4px 12px rgba(0, 0, 0, 0.35)'
+                  : '0 2px 6px rgba(0, 0, 0, 0.25)',
+                color: '#E6EDF3',
                 cursor: 'pointer',
                 transition: 'transform 0.15s, box-shadow 0.15s, border-color 0.15s',
-                transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                transform: isHovered ? 'translateY(-1px)' : 'none',
                 zIndex: isSelected ? 5 : isHovered ? 4 : 1,
               }}
             >
@@ -548,16 +545,15 @@ export default function DagCanvas({
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginBottom: '0.4rem',
+                  marginBottom: '0.35rem',
                 }}
               >
                 <span
                   style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
+                    fontSize: '0.7rem',
+                    fontWeight: 600,
                     color: cfg.text,
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.01em',
                   }}
                 >
                   {cfg.label}
@@ -565,10 +561,11 @@ export default function DagCanvas({
                 <span
                   style={{
                     fontSize: '0.7rem',
-                    color: '#94a3b8',
+                    color: '#8B949E',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     padding: '0.1rem 0.35rem',
                     borderRadius: '4px',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   P{task.priority}
@@ -578,10 +575,10 @@ export default function DagCanvas({
               {/* Title */}
               <div
                 style={{
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
                   lineHeight: 1.3,
-                  marginBottom: '0.4rem',
+                  marginBottom: '0.35rem',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -598,7 +595,7 @@ export default function DagCanvas({
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   fontSize: '0.75rem',
-                  color: '#94a3b8',
+                  color: '#8B949E',
                 }}
               >
                 <span>{task.assigned_provider || task.task_type}</span>
@@ -610,12 +607,12 @@ export default function DagCanvas({
                       onOpenApproval(task.id);
                     }}
                     style={{
-                      backgroundColor: '#f59e0b',
-                      color: '#000',
+                      backgroundColor: '#f5b841',
+                      color: '#0E1116',
                       border: 'none',
                       borderRadius: '4px',
                       padding: '0.2rem 0.5rem',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       fontSize: '0.7rem',
                       cursor: 'pointer',
                     }}
@@ -635,7 +632,7 @@ export default function DagCanvas({
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
             backdropFilter: 'blur(4px)',
             zIndex: 100,
             display: 'flex',
@@ -646,41 +643,42 @@ export default function DagCanvas({
         >
           <div
             style={{
-              backgroundColor: '#12141a',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '10px',
-              padding: '1.5rem',
+              backgroundColor: '#161B22',
+              border: '1px solid #2A313C',
+              borderRadius: '8px',
+              padding: '1.25rem',
               width: '420px',
-              color: '#f8fafc',
+              color: '#E6EDF3',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>Add Task Dependency Edge</h3>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600 }}>Add task dependency edge</h3>
 
             {depError && (
-              <div style={{ marginBottom: '1rem', padding: '0.6rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', borderRadius: '6px', fontSize: '0.85rem' }}>
+              <div style={{ marginBottom: '1rem', padding: '0.5rem 0.75rem', backgroundColor: '#291013', border: '1px solid #66242B', color: '#FCA5A5', borderRadius: '6px', fontSize: '0.85rem' }}>
                 {depError}
               </div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div>
-                <label style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
-                  Prerequisite Task (Must Complete First)
+                <label style={{ fontSize: '0.8rem', color: '#8B949E', display: 'block', marginBottom: '0.25rem' }}>
+                  Prerequisite task (must complete first)
                 </label>
                 <select
                   value={depSourceId}
                   onChange={(e) => setDepSourceId(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#1a1d24',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: '#0E1116',
+                    border: '1px solid #2A313C',
                     borderRadius: '6px',
                     padding: '0.5rem',
-                    color: '#f8fafc',
+                    color: '#E6EDF3',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <option value="">Select Prerequisite Task...</option>
+                  <option value="">Select prerequisite task...</option>
                   {tasks.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.title}
@@ -690,22 +688,23 @@ export default function DagCanvas({
               </div>
 
               <div>
-                <label style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
-                  Dependent Task (Waits for Prerequisite)
+                <label style={{ fontSize: '0.8rem', color: '#8B949E', display: 'block', marginBottom: '0.25rem' }}>
+                  Dependent task (waits for prerequisite)
                 </label>
                 <select
                   value={depTargetId}
                   onChange={(e) => setDepTargetId(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#1a1d24',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: '#0E1116',
+                    border: '1px solid #2A313C',
                     borderRadius: '6px',
                     padding: '0.5rem',
-                    color: '#f8fafc',
+                    color: '#E6EDF3',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <option value="">Select Dependent Task...</option>
+                  <option value="">Select dependent task...</option>
                   {tasks.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.title}
@@ -720,11 +719,12 @@ export default function DagCanvas({
                   onClick={() => setShowDepModal(false)}
                   style={{
                     backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: '#94a3b8',
-                    padding: '0.5rem 1rem',
+                    border: '1px solid #2A313C',
+                    color: '#8B949E',
+                    padding: '0.4rem 0.8rem',
                     borderRadius: '6px',
                     cursor: 'pointer',
+                    fontSize: '0.85rem',
                   }}
                 >
                   Cancel
@@ -734,16 +734,18 @@ export default function DagCanvas({
                   onClick={handleAddDependency}
                   disabled={depLoading || !depSourceId || !depTargetId}
                   style={{
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: '#f5b841',
                     border: 'none',
-                    color: '#fff',
+                    color: '#0E1116',
                     fontWeight: 600,
-                    padding: '0.5rem 1rem',
+                    padding: '0.4rem 0.8rem',
                     borderRadius: '6px',
-                    cursor: depLoading ? 'not-allowed' : 'pointer',
+                    fontSize: '0.85rem',
+                    cursor: depLoading || !depSourceId || !depTargetId ? 'not-allowed' : 'pointer',
+                    opacity: depLoading || !depSourceId || !depTargetId ? 0.6 : 1,
                   }}
                 >
-                  {depLoading ? 'Validating...' : 'Confirm Dependency'}
+                  {depLoading ? 'Validating...' : 'Confirm dependency'}
                 </button>
               </div>
             </div>

@@ -9,8 +9,9 @@ export const Studio: React.FC = () => {
           <div>
             <blockquote className="studio-quote">
               <p className="studio-quote-text">
-                &ldquo;Different AI models. Shared context. Work that continues.&rdquo;
+                &ldquo;Different AI models, shared context, work that continues&rdquo;
               </p>
+              <cite className="studio-quote-cite">SYNQ multi-model runtime architecture</cite>
             </blockquote>
           </div>
 
@@ -19,7 +20,7 @@ export const Studio: React.FC = () => {
             <span className="landing-eyebrow">Architecture</span>
 
             <h2 className="landing-heading" style={{ fontSize: 'clamp(32px, 3.8vw, 44px)', marginTop: '12px' }}>
-              One workspace. Multiple AI agents.
+              One workspace, multiple AI models
             </h2>
 
             <div className="studio-body">
@@ -32,6 +33,25 @@ export const Studio: React.FC = () => {
               <p>
                 Tasks decompose into directed graphs where models execute concurrently, save checkpoints, and cleanly recover when individual providers fail or degrade.
               </p>
+
+              <div className="studio-specs-list">
+                <div className="studio-spec-item">
+                  <span className="studio-spec-dot" aria-hidden="true" />
+                  <span>Kahn topological DAG</span>
+                </div>
+                <div className="studio-spec-item">
+                  <span className="studio-spec-dot" aria-hidden="true" />
+                  <span>FalkorDB graph context</span>
+                </div>
+                <div className="studio-spec-item">
+                  <span className="studio-spec-dot" aria-hidden="true" />
+                  <span>Real-time SSE streaming</span>
+                </div>
+                <div className="studio-spec-item">
+                  <span className="studio-spec-dot" aria-hidden="true" />
+                  <span>Local and cloud mesh</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -39,3 +59,4 @@ export const Studio: React.FC = () => {
     </section>
   );
 };
+

@@ -8,29 +8,33 @@ import { systemApi } from '@/lib/api';
 function NavLinks() {
   const pathname = usePathname();
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+    <nav aria-label="Workspace Navigation" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Link
         href="/app"
         style={{
-          fontSize: '0.9rem',
+          fontSize: '0.85rem',
           fontWeight: 600,
-          color: pathname === '/app' ? 'var(--accent-orange)' : 'var(--text-secondary)',
-          padding: '6px 12px',
+          color: pathname === '/app' ? '#F0F3F6' : 'var(--text-muted)',
+          padding: '6px 14px',
           borderRadius: '6px',
-          background: pathname === '/app' ? 'var(--accent-orange-subtle)' : 'transparent',
+          background: pathname === '/app' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+          border: pathname === '/app' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
+          transition: 'all 0.15s ease',
         }}
       >
-        Projects
+        Workspaces
       </Link>
       <Link
         href="/app/providers"
         style={{
-          fontSize: '0.9rem',
+          fontSize: '0.85rem',
           fontWeight: 600,
-          color: pathname === '/app/providers' ? 'var(--accent-orange)' : 'var(--text-secondary)',
-          padding: '6px 12px',
+          color: pathname === '/app/providers' ? '#F0F3F6' : 'var(--text-muted)',
+          padding: '6px 14px',
           borderRadius: '6px',
-          background: pathname === '/app/providers' ? 'var(--accent-orange-subtle)' : 'transparent',
+          background: pathname === '/app/providers' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+          border: pathname === '/app/providers' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
+          transition: 'all 0.15s ease',
         }}
       >
         Capability Registry
@@ -65,41 +69,55 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      {/* ── App Top Navigation ────────────────────────────────────────────── */}
+      {/* ── App Top Navigation Bar ────────────────────────────────────────── */}
       <header
         style={{
-          background: 'var(--bg-secondary)',
-          borderBottom: '1px solid var(--border-subtle)',
-          padding: '12px 28px',
+          background: '#0E1116',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          padding: '0 24px',
+          height: '56px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          {/* Unified Geometric Logo */}
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="SYNQ Home">
             <div
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
-                background: 'linear-gradient(135deg, #f08c00, #ff922b)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
+                width: '16px',
+                height: '16px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 7px)',
+                gap: '2px',
+              }}
+              aria-hidden="true"
+            >
+              <span style={{ width: '7px', height: '7px', backgroundColor: '#F5B841', borderRadius: '1px' }} />
+              <span style={{ width: '7px', height: '7px', backgroundColor: '#1A212B', borderRadius: '1px', border: '1px solid rgba(255, 255, 255, 0.08)' }} />
+              <span style={{ width: '7px', height: '7px', backgroundColor: '#1A212B', borderRadius: '1px', border: '1px solid rgba(255, 255, 255, 0.08)' }} />
+              <span style={{ width: '7px', height: '7px', backgroundColor: 'rgba(240, 243, 246, 0.85)', borderRadius: '1px' }} />
+            </div>
+            <span style={{ fontSize: '1.05rem', fontWeight: 600, color: '#F0F3F6', letterSpacing: '-0.02em', fontFamily: 'var(--font-display)' }}>
+              SYNQ
+            </span>
+            <span
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 500,
+                color: 'var(--text-muted)',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontFamily: 'var(--font-mono)',
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-              </svg>
-            </div>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
-              SYNQ
+              v0.1.0
             </span>
           </Link>
 
@@ -115,48 +133,55 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              fontSize: '0.8rem',
-              color: 'var(--text-muted)',
-              padding: '4px 10px',
-              background: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--border-subtle)',
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-secondary)',
+              padding: '4px 8px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '4px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             <span
               style={{
-                width: '8px',
-                height: '8px',
+                width: '6px',
+                height: '6px',
                 borderRadius: '50%',
                 background:
                   isBackendHealthy === null
-                    ? '#ffbd2e'
+                    ? '#E5A93C'
                     : isBackendHealthy
-                    ? '#27c93f'
-                    : '#ff5f56',
+                    ? '#40C057'
+                    : '#FA5252',
+                display: 'inline-block',
               }}
-            ></span>
+            />
             <span>
               {isBackendHealthy === null
                 ? 'Connecting...'
                 : isBackendHealthy
-                ? 'Backend Online'
-                : 'Backend Offline'}
+                ? 'Coordinator online'
+                : 'Coordinator offline'}
             </span>
           </div>
 
           <Link
-            href="/app"
-            className="btn-primary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            href="/"
+            style={{
+              fontSize: '0.8rem',
+              color: 'var(--text-muted)',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              transition: 'color 0.15s ease',
+            }}
           >
-            + New Project
+            Landing
           </Link>
         </div>
       </header>
 
       {/* ── Main App Content ─────────────────────────────────────────────── */}
-      <main style={{ flex: 1, padding: '32px 24px', maxWidth: '1360px', margin: '0 auto', width: '100%' }}>
+      <main style={{ flex: 1, padding: '32px 24px', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
         <Suspense fallback={<div style={{ padding: '40px', color: 'var(--text-muted)' }}>Loading workspace...</div>}>
           {children}
         </Suspense>

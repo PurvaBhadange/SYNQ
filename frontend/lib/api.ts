@@ -97,11 +97,18 @@ async function apiFetch<T>(
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   const url = `${base}${cleanPath}`;
   
+  const token = typeof window !== 'undefined' ? (localStorage.getItem('synq_token') || sessionStorage.getItem('synq_token')) : null;
+  const authHeaders: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
+
   let response: Response;
   try {
     response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
       ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+        ...(options?.headers || {}),
+      },
     });
   } catch (err: any) {
     if (err.name === 'TypeError' || err.message === 'Failed to fetch') {

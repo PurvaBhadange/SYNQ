@@ -137,60 +137,58 @@ export default function TaskApprovalModal({
       <div
         className="modal-card"
         style={{
-          backgroundColor: '#12141a',
-          border: '1px solid rgba(245, 158, 11, 0.4)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 158, 11, 0.15)',
-          borderRadius: '12px',
+          backgroundColor: '#161B22',
+          border: '1px solid #2A313C',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+          borderRadius: '8px',
           width: '100%',
           maxWidth: '720px',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          color: '#e2e8f0',
+          color: '#E6EDF3',
         }}
       >
         {/* Header */}
         <div
           style={{
-            padding: '1.25rem 1.5rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '1rem 1.25rem',
+            borderBottom: '1px solid #2A313C',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(26, 29, 36, 0.6) 100%)',
+            backgroundColor: '#161B22',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span
               style={{
                 display: 'inline-block',
-                width: '10px',
-                height: '10px',
+                width: '8px',
+                height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#f59e0b',
-                boxShadow: '0 0 10px #f59e0b',
+                backgroundColor: '#f5b841',
               }}
             />
             <h2
               id="approval-modal-title"
-              style={{ fontSize: '1.15rem', fontWeight: 600, margin: 0, color: '#f8fafc' }}
+              style={{ fontSize: '1rem', fontWeight: 600, margin: 0, color: '#E6EDF3' }}
             >
-              Human-in-the-Loop Governance
+              Task governance review
             </h2>
             <span
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                padding: '0.2rem 0.6rem',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                color: '#fbbf24',
-                border: '1px solid rgba(245, 158, 11, 0.4)',
+                fontWeight: 500,
+                padding: '0.15rem 0.5rem',
+                borderRadius: '4px',
+                backgroundColor: '#261B0E',
+                color: '#FDE68A',
+                border: '1px solid #6E4919',
               }}
             >
-              Awaiting Approval
+              Awaiting approval
             </span>
           </div>
           <button
@@ -199,10 +197,11 @@ export default function TaskApprovalModal({
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#94a3b8',
-              fontSize: '1.25rem',
+              color: '#8B949E',
+              fontSize: '1.1rem',
               cursor: 'pointer',
               padding: '0.25rem',
+              lineHeight: 1,
             }}
           >
             ✕
@@ -210,71 +209,71 @@ export default function TaskApprovalModal({
         </div>
 
         {/* Body */}
-        <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: '1.25rem', overflowY: 'auto', flex: 1 }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#8B949E' }}>
               Loading task approval context...
             </div>
           ) : error && !context ? (
-            <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', borderRadius: '8px' }}>
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: '#291013', color: '#FCA5A5', border: '1px solid #66242B', borderRadius: '6px' }}>
               {error}
             </div>
           ) : context ? (
             <>
               {error && (
-                <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', borderRadius: '6px', fontSize: '0.9rem' }}>
+                <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', backgroundColor: '#291013', color: '#FCA5A5', border: '1px solid #66242B', borderRadius: '6px', fontSize: '0.85rem' }}>
                   {error}
                 </div>
               )}
 
               {/* View 1: Overview & Decision */}
               {view === 'overview' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {/* Task Objective */}
-                  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                      Task Objective
+                  <div style={{ backgroundColor: '#0E1116', padding: '1rem', borderRadius: '6px', border: '1px solid #2A313C' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#8B949E', marginBottom: '0.25rem' }}>
+                      Task objective
                     </div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f8fafc' }}>
+                    <div style={{ fontSize: '1rem', fontWeight: 600, color: '#E6EDF3' }}>
                       {context.title}
                     </div>
                     {context.description && (
-                      <p style={{ marginTop: '0.5rem', fontSize: '0.92rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                      <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#8B949E', lineHeight: 1.5 }}>
                         {context.description}
                       </p>
                     )}
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.85rem' }}>
-                      <span style={{ color: '#94a3b8' }}>
-                        Type: <strong style={{ color: '#60a5fa' }}>{context.task_type}</strong>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#8B949E' }}>
+                        Type: <strong style={{ color: '#E6EDF3', fontWeight: 500 }}>{context.task_type}</strong>
                       </span>
-                      <span style={{ color: '#94a3b8' }}>
-                        Priority: <strong style={{ color: '#e2e8f0' }}>{context.priority}/10</strong>
+                      <span style={{ color: '#8B949E' }}>
+                        Priority: <strong style={{ color: '#E6EDF3', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{context.priority}/10</strong>
                       </span>
                       {context.assigned_provider && (
-                        <span style={{ color: '#94a3b8' }}>
-                          Model: <strong style={{ color: '#34d399' }}>{context.assigned_provider} / {context.assigned_model}</strong>
+                        <span style={{ color: '#8B949E' }}>
+                          Model: <strong style={{ color: '#E6EDF3', fontWeight: 500 }}>{context.assigned_provider} / {context.assigned_model}</strong>
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Reason approval required */}
-                  <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)', padding: '0.9rem 1rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
-                    <div style={{ fontSize: '0.8rem', color: '#fbbf24', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                      Reason Approval Is Required
+                  <div style={{ backgroundColor: '#261B0E', padding: '0.75rem 1rem', borderRadius: '6px', border: '1px solid #6E4919' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#FDE68A', fontWeight: 600, marginBottom: '0.25rem' }}>
+                      Reason approval is required
                     </div>
-                    <div style={{ fontSize: '0.92rem', color: '#fef3c7' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#FDE68A' }}>
                       This task requires explicit operator verification before executing actions in the environment.
                     </div>
                   </div>
 
                   {/* Risks assessment */}
                   {context.risks && context.risks.length > 0 && (
-                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', padding: '0.9rem 1rem', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#f87171', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                        Risk & Impact Evaluation
+                    <div style={{ backgroundColor: '#291013', padding: '0.75rem 1rem', borderRadius: '6px', border: '1px solid #66242B' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#FCA5A5', fontWeight: 600, marginBottom: '0.35rem' }}>
+                        Risk and impact evaluation
                       </div>
-                      <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.88rem', color: '#fecaca' }}>
+                      <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#FCA5A5' }}>
                         {context.risks.map((risk, idx) => (
                           <li key={idx} style={{ marginBottom: '0.2rem' }}>{risk}</li>
                         ))}
@@ -284,11 +283,11 @@ export default function TaskApprovalModal({
 
                   {/* Upstream Dependencies */}
                   <div>
-                    <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                      Upstream Prerequisites ({context.upstream_dependencies.length})
+                    <div style={{ fontSize: '0.75rem', fontWeight: 500, color: '#8B949E', marginBottom: '0.5rem' }}>
+                      Upstream prerequisites ({context.upstream_dependencies.length})
                     </div>
                     {context.upstream_dependencies.length === 0 ? (
-                      <div style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#8B949E', fontStyle: 'italic' }}>
                         No upstream dependencies. Ready for direct execution.
                       </div>
                     ) : (
@@ -299,15 +298,15 @@ export default function TaskApprovalModal({
                             style={{
                               padding: '0.75rem',
                               borderRadius: '6px',
-                              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                              border: '1px solid rgba(255, 255, 255, 0.05)',
+                              backgroundColor: '#0E1116',
+                              border: '1px solid #2A313C',
                               display: 'flex',
                               flexDirection: 'column',
                               gap: '0.35rem',
                             }}
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#f1f5f9' }}>
+                              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#E6EDF3' }}>
                                 {dep.title}
                               </span>
                               <span
@@ -315,15 +314,16 @@ export default function TaskApprovalModal({
                                   fontSize: '0.75rem',
                                   padding: '0.15rem 0.5rem',
                                   borderRadius: '4px',
-                                  backgroundColor: dep.is_completed ? 'rgba(34, 197, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                                  color: dep.is_completed ? '#4ade80' : '#fbbf24',
+                                  backgroundColor: dep.is_completed ? '#0E2318' : '#261B0E',
+                                  color: dep.is_completed ? '#86EFAC' : '#FDE68A',
+                                  border: `1px solid ${dep.is_completed ? '#1D5A38' : '#6E4919'}`,
                                 }}
                               >
-                                {dep.status.toUpperCase()}
+                                {dep.status}
                               </span>
                             </div>
                             {dep.latest_output_preview && (
-                              <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontFamily: 'monospace', backgroundColor: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '4px' }}>
+                              <div style={{ fontSize: '0.8rem', color: '#8B949E', fontFamily: 'monospace', backgroundColor: '#161B22', padding: '0.4rem', borderRadius: '4px' }}>
                                 {dep.latest_output_preview}
                               </div>
                             )}
@@ -335,20 +335,20 @@ export default function TaskApprovalModal({
 
                   {/* Approval Note */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                    <label style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-                      Operator Note (Audit Log):
+                    <label style={{ fontSize: '0.8rem', color: '#8B949E' }}>
+                      Operator note (audit log)
                     </label>
                     <input
                       type="text"
                       value={approvalReason}
                       onChange={(e) => setApprovalReason(e.target.value)}
                       style={{
-                        backgroundColor: '#1a1d24',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: '#0E1116',
+                        border: '1px solid #2A313C',
                         borderRadius: '6px',
-                        padding: '0.6rem 0.75rem',
-                        color: '#f8fafc',
-                        fontSize: '0.9rem',
+                        padding: '0.5rem 0.75rem',
+                        color: '#E6EDF3',
+                        fontSize: '0.875rem',
                       }}
                     />
                   </div>
@@ -358,11 +358,11 @@ export default function TaskApprovalModal({
               {/* View 2: Reject Form */}
               {view === 'reject' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ fontSize: '1rem', fontWeight: 600, color: '#f87171' }}>
-                    Reject Task Execution
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#FCA5A5' }}>
+                    Reject task execution
                   </div>
-                  <p style={{ fontSize: '0.9rem', color: '#cbd5e1', margin: 0 }}>
-                    Please explain why this task is being rejected. This reason will be recorded in the audit log and any downstream tasks will be marked as blocked.
+                  <p style={{ fontSize: '0.875rem', color: '#8B949E', margin: 0 }}>
+                    Provide a specific reason for rejection. This reason will be recorded in the audit log and any downstream tasks will be marked as blocked.
                   </p>
                   <textarea
                     rows={4}
@@ -370,12 +370,12 @@ export default function TaskApprovalModal({
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     style={{
-                      backgroundColor: '#1a1d24',
-                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      backgroundColor: '#0E1116',
+                      border: '1px solid #66242B',
                       borderRadius: '6px',
-                      padding: '0.75rem',
-                      color: '#f8fafc',
-                      fontSize: '0.9rem',
+                      padding: '0.6rem 0.75rem',
+                      color: '#E6EDF3',
+                      fontSize: '0.875rem',
                       fontFamily: 'inherit',
                     }}
                   />
@@ -385,53 +385,56 @@ export default function TaskApprovalModal({
               {/* View 3: Edit & Resubmit Form */}
               {view === 'edit' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ fontSize: '1rem', fontWeight: 600, color: '#60a5fa' }}>
-                    Edit & Resubmit Task
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#E6EDF3' }}>
+                    Edit and resubmit task
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                    <label style={{ fontSize: '0.82rem', color: '#94a3b8' }}>Title</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <label style={{ fontSize: '0.8rem', color: '#8B949E' }}>Title</label>
                     <input
                       type="text"
                       value={editTitle}
                       onChange={(e) => setEditTitle(e.target.value)}
                       style={{
-                        backgroundColor: '#1a1d24',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: '#0E1116',
+                        border: '1px solid #2A313C',
                         borderRadius: '6px',
-                        padding: '0.6rem 0.75rem',
-                        color: '#f8fafc',
+                        padding: '0.5rem 0.75rem',
+                        color: '#E6EDF3',
+                        fontSize: '0.875rem',
                       }}
                     />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                    <label style={{ fontSize: '0.82rem', color: '#94a3b8' }}>Instructions / Description</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <label style={{ fontSize: '0.8rem', color: '#8B949E' }}>Instructions / description</label>
                     <textarea
                       rows={3}
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
                       style={{
-                        backgroundColor: '#1a1d24',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: '#0E1116',
+                        border: '1px solid #2A313C',
                         borderRadius: '6px',
-                        padding: '0.6rem 0.75rem',
-                        color: '#f8fafc',
+                        padding: '0.5rem 0.75rem',
+                        color: '#E6EDF3',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                    <label style={{ fontSize: '0.82rem', color: '#94a3b8' }}>Acceptance Criteria</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <label style={{ fontSize: '0.8rem', color: '#8B949E' }}>Acceptance criteria</label>
                     <textarea
                       rows={2}
                       value={editCriteria}
                       onChange={(e) => setEditCriteria(e.target.value)}
                       style={{
-                        backgroundColor: '#1a1d24',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: '#0E1116',
+                        border: '1px solid #2A313C',
                         borderRadius: '6px',
-                        padding: '0.6rem 0.75rem',
-                        color: '#f8fafc',
+                        padding: '0.5rem 0.75rem',
+                        color: '#E6EDF3',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     />
                   </div>
@@ -444,12 +447,12 @@ export default function TaskApprovalModal({
         {/* Footer Actions */}
         <div
           style={{
-            padding: '1.25rem 1.5rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '1rem 1.25rem',
+            borderTop: '1px solid #2A313C',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#0c0e12',
+            backgroundColor: '#0E1116',
           }}
         >
           {view === 'overview' ? (
@@ -461,27 +464,27 @@ export default function TaskApprovalModal({
                   disabled={submitting}
                   style={{
                     backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: '#94a3b8',
-                    padding: '0.6rem 1rem',
+                    border: '1px solid #2A313C',
+                    color: '#8B949E',
+                    padding: '0.5rem 0.75rem',
                     borderRadius: '6px',
-                    fontSize: '0.88rem',
+                    fontSize: '0.85rem',
                     cursor: 'pointer',
                   }}
                 >
-                  Edit & Resubmit
+                  Edit and resubmit
                 </button>
                 <button
                   type="button"
                   onClick={() => setView('reject')}
                   disabled={submitting}
                   style={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                    border: '1px solid rgba(239, 68, 68, 0.4)',
-                    color: '#fca5a5',
-                    padding: '0.6rem 1rem',
+                    backgroundColor: '#291013',
+                    border: '1px solid #66242B',
+                    color: '#FCA5A5',
+                    padding: '0.5rem 0.75rem',
                     borderRadius: '6px',
-                    fontSize: '0.88rem',
+                    fontSize: '0.85rem',
                     cursor: 'pointer',
                   }}
                 >
@@ -489,7 +492,7 @@ export default function TaskApprovalModal({
                 </button>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   type="button"
                   onClick={onClose}
@@ -497,10 +500,10 @@ export default function TaskApprovalModal({
                   style={{
                     backgroundColor: 'transparent',
                     border: 'none',
-                    color: '#94a3b8',
-                    padding: '0.6rem 1rem',
+                    color: '#8B949E',
+                    padding: '0.5rem 0.75rem',
                     borderRadius: '6px',
-                    fontSize: '0.88rem',
+                    fontSize: '0.85rem',
                     cursor: 'pointer',
                   }}
                 >
@@ -511,21 +514,20 @@ export default function TaskApprovalModal({
                   onClick={handleApprove}
                   disabled={submitting || (context ? !context.dependencies_all_completed : false)}
                   style={{
-                    backgroundColor: context?.dependencies_all_completed ? '#10b981' : '#64748b',
+                    backgroundColor: context?.dependencies_all_completed ? '#f5b841' : '#2A313C',
                     border: 'none',
-                    color: '#ffffff',
+                    color: context?.dependencies_all_completed ? '#0E1116' : '#8B949E',
                     fontWeight: 600,
-                    padding: '0.6rem 1.4rem',
+                    padding: '0.5rem 1rem',
                     borderRadius: '6px',
-                    fontSize: '0.9rem',
+                    fontSize: '0.85rem',
                     cursor: context?.dependencies_all_completed ? 'pointer' : 'not-allowed',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    boxShadow: context?.dependencies_all_completed ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none',
                   }}
                 >
-                  {submitting ? 'Executing...' : 'Approve & Execute'}
+                  {submitting ? 'Executing...' : 'Approve and execute'}
                 </button>
               </div>
             </>
@@ -537,10 +539,11 @@ export default function TaskApprovalModal({
                 disabled={submitting}
                 style={{
                   backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#94a3b8',
-                  padding: '0.6rem 1rem',
+                  border: '1px solid #2A313C',
+                  color: '#8B949E',
+                  padding: '0.5rem 0.75rem',
                   borderRadius: '6px',
+                  fontSize: '0.85rem',
                   cursor: 'pointer',
                 }}
               >
@@ -555,12 +558,14 @@ export default function TaskApprovalModal({
                   border: 'none',
                   color: '#ffffff',
                   fontWeight: 600,
-                  padding: '0.6rem 1.4rem',
+                  padding: '0.5rem 1rem',
                   borderRadius: '6px',
+                  fontSize: '0.85rem',
                   cursor: rejectionReason.trim() ? 'pointer' : 'not-allowed',
+                  opacity: rejectionReason.trim() ? 1 : 0.6,
                 }}
               >
-                {submitting ? 'Rejecting...' : 'Confirm Rejection'}
+                {submitting ? 'Rejecting...' : 'Confirm rejection'}
               </button>
             </>
           ) : (
@@ -571,10 +576,11 @@ export default function TaskApprovalModal({
                 disabled={submitting}
                 style={{
                   backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#94a3b8',
-                  padding: '0.6rem 1rem',
+                  border: '1px solid #2A313C',
+                  color: '#8B949E',
+                  padding: '0.5rem 0.75rem',
                   borderRadius: '6px',
+                  fontSize: '0.85rem',
                   cursor: 'pointer',
                 }}
               >
@@ -585,16 +591,18 @@ export default function TaskApprovalModal({
                 onClick={handleEditAndResubmit}
                 disabled={submitting || !editTitle.trim()}
                 style={{
-                  backgroundColor: '#3b82f6',
+                  backgroundColor: '#f5b841',
                   border: 'none',
-                  color: '#ffffff',
+                  color: '#0E1116',
                   fontWeight: 600,
-                  padding: '0.6rem 1.4rem',
+                  padding: '0.5rem 1rem',
                   borderRadius: '6px',
+                  fontSize: '0.85rem',
                   cursor: editTitle.trim() ? 'pointer' : 'not-allowed',
+                  opacity: editTitle.trim() ? 1 : 0.6,
                 }}
               >
-                {submitting ? 'Saving...' : 'Save & Resubmit'}
+                {submitting ? 'Saving...' : 'Save and resubmit'}
               </button>
             </>
           )}

@@ -9,6 +9,7 @@ python-multipart==0.0.12
 # ── Database ──────────────────────────────────────────────────────────────────
 sqlalchemy[asyncio]==2.0.36
 aiosqlite==0.20.0              # SQLite async driver (dev)
+asyncpg>=0.29.0                # PostgreSQL async driver (prod)
 alembic==1.14.0                # DB migrations
 
 # ── FalkorDB (Graph Memory) ───────────────────────────────────────────────────

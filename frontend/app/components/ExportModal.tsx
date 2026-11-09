@@ -108,32 +108,36 @@ export default function ExportModal({
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#0c0e14',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
-          borderRadius: '16px',
+          backgroundColor: '#161B22',
+          border: '1px solid #2A313C',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+          borderRadius: '8px',
           overflow: 'hidden',
         }}
       >
         {/* Header */}
         <div
           style={{
-            padding: '20px 24px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '1rem 1.25rem',
+            borderBottom: '1px solid #2A313C',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.2rem' }}>📦</span>
-              <h2 id="export-modal-title" style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>
-                Export Project Deliverables
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5B841" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <h2 id="export-modal-title" style={{ fontSize: '1rem', fontWeight: 600, color: '#E6EDF3', margin: 0 }}>
+                Export project deliverables
               </h2>
             </div>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              Project: <strong style={{ color: '#fff' }}>{projectName}</strong>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#8B949E' }}>
+              Project: <strong style={{ color: '#E6EDF3', fontWeight: 500 }}>{projectName}</strong>
             </p>
           </div>
           <button
@@ -142,78 +146,84 @@ export default function ExportModal({
             style={{
               background: 'none',
               border: 'none',
-              color: 'var(--text-muted)',
-              fontSize: '1.5rem',
+              color: '#8B949E',
+              fontSize: '1.25rem',
               cursor: 'pointer',
               padding: '4px',
-              borderRadius: '6px',
+              lineHeight: 1,
             }}
           >
-            ×
+            ✕
           </button>
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {error && (
             <div
               style={{
-                padding: '12px 16px',
-                borderRadius: '8px',
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#fca5a5',
-                fontSize: '0.9rem',
+                padding: '0.75rem 1rem',
+                borderRadius: '6px',
+                background: '#291013',
+                border: '1px solid #66242B',
+                color: '#FCA5A5',
+                fontSize: '0.85rem',
               }}
             >
-              ⚠️ {error}
+              Error: {error}
             </div>
           )}
 
           {/* Security & Scrubbing Notice */}
           <div
             style={{
-              padding: '14px 18px',
-              borderRadius: '10px',
-              background: 'rgba(34, 197, 94, 0.08)',
-              border: '1px solid rgba(34, 197, 94, 0.25)',
+              padding: '0.75rem 1rem',
+              borderRadius: '6px',
+              background: '#0E2318',
+              border: '1px solid #1D5A38',
               display: 'flex',
-              gap: '12px',
+              gap: '0.75rem',
               alignItems: 'flex-start',
             }}
           >
-            <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>🛡️</span>
-            <div style={{ fontSize: '0.85rem', color: '#bbf7d0', lineHeight: 1.5 }}>
-              <strong>Zero-Cost & Secret Redaction Guarantee:</strong> All exports are sanitized against path traversal
-              and strictly exclude sensitive files (e.g. <code>.env</code>, <code>*.key</code>, <code>synq.db</code>).
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }} aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <div style={{ fontSize: '0.8rem', color: '#86EFAC', lineHeight: 1.5 }}>
+              <strong style={{ color: '#E6EDF3', fontWeight: 600 }}>Secret redaction and path traversal guarantee:</strong> All exports are sanitized against directory traversal
+              and strictly exclude environment files (e.g. <code>.env</code>, <code>*.key</code>, <code>synq.db</code>).
               Discovered cloud API keys are scrubbed and replaced with <code>[REDACTED_SECRET]</code> prior to compression.
             </div>
           </div>
 
           {/* Export Options Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {/* ZIP Card */}
             <div
               style={{
-                padding: '18px',
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '1rem',
+                borderRadius: '6px',
+                background: '#0E1116',
+                border: '1px solid #2A313C',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                gap: '14px',
+                gap: '1rem',
               }}
             >
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '1.4rem' }}>🗜️</span>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', margin: 0 }}>
-                    ZIP Archive
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5B841" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="21 8 21 21 3 21 3 8" />
+                    <rect x="1" y="3" width="22" height="5" />
+                    <line x1="10" y1="12" x2="14" y2="12" />
+                  </svg>
+                  <h3 style={{ fontSize: '0.92rem', fontWeight: 600, color: '#E6EDF3', margin: 0 }}>
+                    ZIP archive
                   </h3>
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
-                  Comprehensive distribution package containing verified task outputs, <code>manifest.json</code>,
+                <p style={{ fontSize: '0.8rem', color: '#8B949E', margin: 0, lineHeight: 1.45 }}>
+                  Distribution package containing verified task outputs, <code>manifest.json</code>,
                   dependency graph, and dossier.
                 </p>
               </div>
@@ -224,39 +234,45 @@ export default function ExportModal({
                 className="btn-primary"
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
-                  fontSize: '0.88rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
+                  gap: '0.5rem',
                 }}
               >
-                {downloadingZip ? 'Preparing Archive...' : 'Download ZIP Archive'}
+                {downloadingZip ? 'Preparing archive...' : 'Download ZIP archive'}
               </button>
             </div>
 
             {/* Markdown Dossier Card */}
             <div
               style={{
-                padding: '18px',
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '1rem',
+                borderRadius: '6px',
+                background: '#0E1116',
+                border: '1px solid #2A313C',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                gap: '14px',
+                gap: '1rem',
               }}
             >
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '1.4rem' }}>📄</span>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', margin: 0 }}>
-                    Markdown Dossier
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B949E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  <h3 style={{ fontSize: '0.92rem', fontWeight: 600, color: '#E6EDF3', margin: 0 }}>
+                    Markdown dossier
                   </h3>
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                <p style={{ fontSize: '0.8rem', color: '#8B949E', margin: 0, lineHeight: 1.45 }}>
                   Human-readable audit report containing project overview, task outputs, validation results, peer reviews,
                   and architectural decisions.
                 </p>
@@ -268,27 +284,27 @@ export default function ExportModal({
                 className="btn-secondary"
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
-                  fontSize: '0.88rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
+                  gap: '0.5rem',
                 }}
               >
-                {downloadingMd ? 'Generating...' : 'Download Markdown (.md)'}
+                {downloadingMd ? 'Generating...' : 'Download markdown (.md)'}
               </button>
             </div>
           </div>
 
           {/* Deliverables Preview List */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-                MANIFEST PREVIEW
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8B949E', letterSpacing: '0.02em' }}>
+                Manifest preview
               </span>
               {preview && (
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                <span style={{ fontSize: '0.75rem', color: '#8B949E', fontVariantNumeric: 'tabular-nums' }}>
                   {preview.completed_task_count} of {preview.total_task_count} tasks completed
                 </span>
               )}
@@ -296,24 +312,24 @@ export default function ExportModal({
 
             <div
               style={{
-                padding: '12px 16px',
-                borderRadius: '8px',
-                background: '#07080c',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
+                padding: '0.75rem 1rem',
+                borderRadius: '6px',
+                background: '#0E1116',
+                border: '1px solid #2A313C',
                 fontFamily: 'monospace',
                 fontSize: '0.8rem',
-                maxHeight: '150px',
+                maxHeight: '140px',
                 overflowY: 'auto',
-                color: 'var(--text-secondary)',
+                color: '#8B949E',
               }}
             >
               {loading ? (
                 <div>Scanning eligible deliverables...</div>
               ) : preview && preview.deliverable_files.length > 0 ? (
                 preview.deliverable_files.map((file, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '3px 0' }}>
-                    <span style={{ color: 'var(--accent-orange)' }}>📁</span>
-                    <span>{file}</span>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.2rem 0' }}>
+                    <span style={{ color: '#F5B841' }}>›</span>
+                    <span style={{ color: '#E6EDF3' }}>{file}</span>
                   </div>
                 ))
               ) : (
@@ -326,16 +342,17 @@ export default function ExportModal({
         {/* Footer */}
         <div
           style={{
-            padding: '16px 24px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '0.75rem 1.25rem',
+            borderTop: '1px solid #2A313C',
             display: 'flex',
             justifyContent: 'flex-end',
+            backgroundColor: '#0E1116',
           }}
         >
           <button
             onClick={onClose}
             className="btn-secondary"
-            style={{ padding: '8px 20px', fontSize: '0.9rem' }}
+            style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}
           >
             Close
           </button>

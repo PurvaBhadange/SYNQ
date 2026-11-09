@@ -8,10 +8,16 @@ import json
 import logging
 from typing import Dict, Set
 
+from config import get_settings
 from core.coordinator import coordinator
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from core.security import decode_access_token, hash_api_key
+from db.models import Project, User, UserRole
+from db.session import AsyncSessionLocal
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 router = APIRouter(tags=["websockets"])
 
@@ -63,7 +69,48 @@ manager = ConnectionManager()
 
 
 @router.websocket("/ws/{project_id}")
-async def websocket_endpoint(websocket: WebSocket, project_id: str):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    project_id: str,
+    token: Optional[str] = Query(None),
+    api_key: Optional[str] = Query(None),
+):
+    # Enforce WebSocket authentication when auth is enabled
+    if settings.auth_enabled:
+        # Check query param, then fallback to Authorization / X-API-Key headers
+        auth_token = token
+        auth_api_key = api_key
+        if not auth_token:
+            auth_header = websocket.headers.get("authorization", "")
+            if auth_header.lower().startswith("bearer "):
+                auth_token = auth_header.split(" ", 1)[1].strip()
+        if not auth_api_key:
+            auth_api_key = websocket.headers.get("x-api-key")
+
+        authenticated_user = None
+        async with AsyncSessionLocal() as db:
+            if auth_token:
+                payload = decode_access_token(auth_token)
+                if payload and "sub" in payload:
+                    authenticated_user = await db.get(User, payload["sub"])
+            elif auth_api_key:
+                key_hash = hash_api_key(auth_api_key)
+                res = await db.execute(select(User).where(User.api_key_hash == key_hash))
+                authenticated_user = res.scalar_one_or_none()
+
+            if not authenticated_user or not authenticated_user.is_active:
+                logger.warning("Rejected unauthenticated WebSocket connection for project %s", project_id)
+                await websocket.close(code=1008, reason="Authentication failed: invalid or expired credentials.")
+                return
+
+            # Check project ownership / permissions
+            project = await db.get(Project, project_id)
+            if project and authenticated_user.role != UserRole.ADMIN.value:
+                if project.owner_id and project.owner_id != authenticated_user.id:
+                    logger.warning("Forbidden WebSocket access: user %s attempted to access project %s", authenticated_user.id, project_id)
+                    await websocket.close(code=1008, reason="Forbidden: Access to this project stream is denied.")
+                    return
+
     await manager.connect(websocket, project_id)
     # Send initial greeting
     await websocket.send_json({

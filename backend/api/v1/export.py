@@ -43,12 +43,17 @@ FORBIDDEN_FILE_PATTERNS = [
 ]
 
 SECRET_VALUE_PATTERNS = [
-    re.compile(r"AIza[0-9A-Za-z-_]{30,}"),               # Google API Key
+    re.compile(r"AIza[0-9A-Za-z-_]{30,}"),               # Google API Key (AIza)
+    re.compile(r"AQ\.[0-9A-Za-z-_]{30,}"),                # Google Gemini API Key (AQ.)
     re.compile(r"gsk_[a-zA-Z0-9]{30,}"),                # Groq API Key
     re.compile(r"hf_[a-zA-Z0-9]{30,}"),                 # Hugging Face token
     re.compile(r"tvly-[a-zA-Z0-9]{30,}"),               # Tavily API Key
+    re.compile(r"sk-[a-zA-Z0-9_-]{20,}"),               # OpenAI / Anthropic API Key
+    re.compile(r"synq_live_[a-zA-Z0-9_-]{20,}"),        # SYNQ Live API Key
     re.compile(r"AKIA[0-9A-Z]{16}"),                    # AWS Access Key
-    re.compile(r"(?:api[_-]?key|secret|password)\s*[:=]\s*['\"][^'\"]+['\"]", re.IGNORECASE),
+    re.compile(r"Bearer\s+[0-9A-Za-z-_\.]{20,}", re.IGNORECASE),  # Auth Bearer Tokens
+    re.compile(r"(?:postgres(?:ql)?|mongodb(?:\+srv)?|redis|mysql):\/\/[^\s'\"]+"),  # DB connection URLs
+    re.compile(r"(?:api[_-]?key|secret|password|token)\s*[:=]\s*['\"][^'\"]+['\"]", re.IGNORECASE),
 ]
 
 

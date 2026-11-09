@@ -14,8 +14,8 @@ export const Hero: React.FC = () => {
       {/* Layer 3: Headline Block (z-10) */}
       <div className="landing-hero-content">
         <h1 className="landing-hero-title">
-          Multiple AI agents. <br />
-          <span className="landing-hero-title-amber">One continuous workflow.</span>
+          Multiple AI models <br />
+          <span className="landing-hero-title-amber">One continuous workflow</span>
         </h1>
 
         <p className="landing-hero-sub">
@@ -24,10 +24,10 @@ export const Hero: React.FC = () => {
 
         <div className="landing-hero-actions">
           <Link href="/app" className="btn-landing-primary">
-            Launch Workspace →
+            Launch workspace
           </Link>
           <a href="#capabilities" className="btn-landing-outline">
-            Explore Capabilities
+            Explore capabilities
           </a>
         </div>
       </div>

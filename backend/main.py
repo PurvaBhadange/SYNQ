@@ -68,6 +68,9 @@ async def lifespan(app: FastAPI):
     falkor_client.close()
 
 
+from api.v1.auth import router as auth_router
+from core.middleware import RateLimitMiddleware, SecurityHeadersMiddleware
+
 # ── Application ───────────────────────────────────────────────────────────────
 app = FastAPI(
     title="SYNQ API",
@@ -77,9 +80,14 @@ app = FastAPI(
     ),
     version="0.1.0",
     lifespan=lifespan,
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
+    openapi_url="/openapi.json" if settings.debug else None,
 )
+
+# Security Headers & Rate Limiting Middlewares (outermost)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware)
 
 # CORS — allow frontend dev server and Vercel production deployments
 allowed_origins = {
@@ -99,23 +107,30 @@ app.add_middleware(
 )
 
 
+import re as _re
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.exception("Global unhandled exception on %s %s: %s", request.method, request.url.path, exc)
     origin = request.headers.get("origin")
     headers = {}
-    if origin:
+    if origin and (origin in allowed_origins or _re.match(r"^https://.*\.vercel\.app$", origin)):
         headers["Access-Control-Allow-Origin"] = origin
         headers["Access-Control-Allow-Credentials"] = "true"
         headers["Access-Control-Allow-Headers"] = "*"
         headers["Access-Control-Allow-Methods"] = "*"
+
+    # In production/non-debug mode, do not leak raw stack traces or internal library errors
+    error_msg = f"Internal server error: {str(exc)}" if settings.debug else "An internal server error occurred."
+
     return JSONResponse(
         status_code=500,
-        content={"detail": f"Internal server error: {str(exc)}"},
+        content={"detail": error_msg},
         headers=headers,
     )
 
 # ── Routers ───────────────────────────────────────────────────────────────────
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(projects_router, prefix="/api/v1")
 app.include_router(providers_router, prefix="/api/v1")
 app.include_router(tasks_router, prefix="/api/v1")
@@ -141,4 +156,5 @@ async def health():
 
 @app.get("/", tags=["system"])
 async def root():
-    return {"message": "SYNQ API is running. Visit /docs for API documentation."}
+    msg = "SYNQ API is running. Visit /docs for API documentation." if settings.debug else "SYNQ API is running in production mode."
+    return {"message": msg}

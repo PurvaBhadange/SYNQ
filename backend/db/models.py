@@ -82,6 +82,12 @@ class ProviderStatus(str, PyEnum):
     UNCONFIGURED = "unconfigured"
 
 
+class UserRole(str, PyEnum):
+    ADMIN = "admin"
+    MEMBER = "member"
+    VIEWER = "viewer"
+
+
 # ── Base ──────────────────────────────────────────────────────────────────────
 
 class Base(DeclarativeBase):
@@ -89,6 +95,31 @@ class Base(DeclarativeBase):
 
 
 # ── Models ────────────────────────────────────────────────────────────────────
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
+    username: Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(
+        Enum(UserRole, values_callable=lambda x: [e.value for e in x]),
+        default=UserRole.MEMBER.value,
+        nullable=False,
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    api_key_hash: Mapped[Optional[str]] = mapped_column(String(64), unique=True, index=True, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
 
 class Project(Base):
     __tablename__ = "projects"
@@ -111,6 +142,10 @@ class Project(Base):
     allowed_providers: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     # Reference to the FalkorDB graph for this project.
     memory_graph_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # Multi-tenant owner reference. Nullable for backward-compatibility with single-tenant / dev mode.
+    owner_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

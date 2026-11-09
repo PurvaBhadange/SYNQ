@@ -5,6 +5,7 @@ import { useInView } from './useInView';
 
 interface Stage {
   number: string;
+  pill: string;
   title: string;
   description: string;
 }
@@ -12,18 +13,21 @@ interface Stage {
 const STAGES: Stage[] = [
   {
     number: '01',
+    pill: 'DAG scheduling',
     title: 'Decompose',
     description:
       'Turn complex objectives into manageable tasks with explicit dependencies and deterministic topological DAG ordering.',
   },
   {
     number: '02',
+    pill: 'Capability mesh',
     title: 'Coordinate',
     description:
       'Route tasks to eligible AI models according to capabilities, privacy, availability, and configured token limits.',
   },
   {
     number: '03',
+    pill: 'Graph checkpoints',
     title: 'Continue',
     description:
       'Preserve checkpoints and project context in FalkorDB graph memory so work recovers from failures and continues seamlessly.',
@@ -40,7 +44,7 @@ export const Process: React.FC = () => {
         <span className="landing-eyebrow">How SYNQ works</span>
 
         {/* H2 */}
-        <h2 className="landing-heading">Plan. Coordinate. Execute.</h2>
+        <h2 className="landing-heading">Plan, coordinate, execute</h2>
 
         {/* Three columns */}
         <div className="process-grid">
@@ -52,6 +56,8 @@ export const Process: React.FC = () => {
             >
               <div className="process-num">{stage.number}</div>
 
+              <span className="process-pill">{stage.pill}</span>
+
               <h3 className="process-title">{stage.title}</h3>
 
               <p className="process-desc">{stage.description}</p>
@@ -62,3 +68,4 @@ export const Process: React.FC = () => {
     </section>
   );
 };
+
