@@ -2,15 +2,28 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    if (process.env.NODE_ENV === "development") {
-      return [
-        {
-          source: "/api/:path*",
-          destination: "http://localhost:8000/api/:path*",
-        },
-      ];
-    }
-    return [];
+    const defaultBackend =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:8000"
+        : "https://synq-6p9m.onrender.com";
+
+    const rawBackend =
+      process.env.BACKEND_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      defaultBackend;
+
+    const backendUrl = rawBackend
+      .trim()
+      .replace(/[\r\n\t]+/g, "")
+      .replace(/\/api\/v1\/?$/, "")
+      .replace(/\/+$/, "");
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
   },
   async headers() {
     return [

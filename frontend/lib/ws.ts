@@ -27,9 +27,33 @@ export interface WebSocketEvent {
 
 export type EventHandler = (event: WebSocketEvent) => void;
 
+export function normalizeWsUrl(rawUrl?: string): string {
+  if (!rawUrl) return '';
+  let cleaned = rawUrl.trim().replace(/[\r\n\t]+/g, '').replace(/\/+$/, '');
+  if (!cleaned) return '';
+  if (cleaned.startsWith('https://')) {
+    cleaned = cleaned.replace(/^https:\/\//, 'wss://');
+  } else if (cleaned.startsWith('http://')) {
+    cleaned = cleaned.replace(/^http:\/\//, 'ws://');
+  } else if (!cleaned.startsWith('ws://') && !cleaned.startsWith('wss://')) {
+    cleaned = `wss://${cleaned}`;
+  }
+  if (cleaned.endsWith('/api/v1/ws')) {
+    return cleaned;
+  }
+  if (cleaned.endsWith('/api/v1')) {
+    return `${cleaned}/ws`;
+  }
+  if (cleaned.endsWith('/ws')) {
+    return cleaned;
+  }
+  return `${cleaned}/api/v1/ws`;
+}
+
 export function getWsBase(): string {
   if (process.env.NEXT_PUBLIC_WS_URL) {
-    return process.env.NEXT_PUBLIC_WS_URL.replace(/\/+$/, '');
+    const normalized = normalizeWsUrl(process.env.NEXT_PUBLIC_WS_URL);
+    if (normalized) return normalized;
   }
   if (typeof window !== 'undefined') {
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {

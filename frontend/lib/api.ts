@@ -4,36 +4,51 @@
  */
 
 /**
+ * Normalizes an API base URL ensuring proper protocol, no trailing whitespace/newlines,
+ * and standard /api/v1 suffix.
+ */
+export function normalizeApiUrl(rawUrl?: string): string {
+  if (!rawUrl) return '';
+  let cleaned = rawUrl.trim().replace(/[\r\n\t]+/g, '').replace(/\/+$/, '');
+  if (!cleaned) return '';
+  if (!cleaned.startsWith('http://') && !cleaned.startsWith('https://')) {
+    cleaned = `https://${cleaned}`;
+  }
+  if (cleaned.endsWith('/api/v1')) {
+    return cleaned;
+  }
+  if (cleaned.endsWith('/api')) {
+    return `${cleaned}/v1`;
+  }
+  return `${cleaned}/api/v1`;
+}
+
+/**
  * Resolves the API base URL depending on runtime environment:
- * 1. Server-side runtime (Next.js SSR, Route Handlers, Server Actions):
- *    Uses process.env.BACKEND_URL injected by Vercel Services binding.
- * 2. Client-side browser runtime:
- *    Uses NEXT_PUBLIC_API_URL if configured, otherwise defaults to '/api/v1'
- *    in deployed environments (routed to synq-backend via Vercel rewrites),
- *    or 'http://localhost:8000/api/v1' during local standalone development.
+ * 1. Checks NEXT_PUBLIC_API_URL and normalizes it (ensuring /api/v1 is present).
+ * 2. Checks BACKEND_URL on server-side runtime.
+ * 3. Defaults to http://localhost:8000/api/v1 on local development.
+ * 4. Defaults to https://synq-6p9m.onrender.com/api/v1 in production.
  */
 export function getApiBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    const normalized = normalizeApiUrl(process.env.NEXT_PUBLIC_API_URL);
+    if (normalized) return normalized;
+  }
+
   if (typeof window === 'undefined') {
     if (process.env.BACKEND_URL) {
-      return `${process.env.BACKEND_URL.replace(/\/+$/, '')}/api/v1`;
-    }
-    if (process.env.NEXT_PUBLIC_API_URL) {
-      return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+      return normalizeApiUrl(process.env.BACKEND_URL);
     }
     return 'https://synq-6p9m.onrender.com/api/v1';
   }
 
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
-  }
-
-  // If in browser on localhost or 127.0.0.1 without dev proxy:
+  // If in browser on localhost or 127.0.0.1:
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://localhost:8000/api/v1';
   }
 
   // Deployed production environment: connect directly to live Render backend
-  // with configured AI providers, SQLite DB, and WebSockets
   return 'https://synq-6p9m.onrender.com/api/v1';
 }
 
@@ -94,7 +109,10 @@ async function apiFetch<T>(
   options?: RequestInit
 ): Promise<T> {
   const base = getApiBase();
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  let cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (cleanPath.startsWith('/api/v1/')) {
+    cleanPath = cleanPath.replace(/^\/api\/v1/, '');
+  }
   const url = `${base}${cleanPath}`;
   
   const token = typeof window !== 'undefined' ? (localStorage.getItem('synq_token') || sessionStorage.getItem('synq_token')) : null;
