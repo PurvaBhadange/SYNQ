@@ -116,7 +116,7 @@ class Planner:
             try:
                 plan_result = await asyncio.wait_for(
                     self._plan_with_provider(provider, goal, domain),
-                    timeout=20.0,
+                    timeout=8.0,
                 )
                 if plan_result and plan_result.is_dag_valid:
                     return plan_result

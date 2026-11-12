@@ -227,7 +227,8 @@ class TaskCoordinator:
             try:
                 system_prompt = (
                     f"You are SYNQ's specialized AI Agent for task type: '{task.task_type}'.\n"
-                    f"Deliver high quality, precise, and verified results.\n"
+                    f"Deliver high quality, precise, structured, and verified results directly.\n"
+                    f"Be direct and concise; avoid unnecessary conversational filler or preambles.\n"
                     f"Task Acceptance Criteria: {task.acceptance_criteria or 'Not specified'}"
                 )
 
@@ -246,13 +247,13 @@ class TaskCoordinator:
                     for dec in context_package["relevant_decisions"]:
                         user_msg_parts.append(f"- {dec['description']} (Rationale: {dec['rationale']})")
 
-                # Web search enrichment via Tavily for research and analysis tasks
+                # Web search enrichment via Tavily with bounded 3.0s latency cap
                 if task.task_type in ("research", "analyze") or "search" in (task.description or "").lower():
                     try:
                         from tools.tavily import tavily_client
                         if tavily_client.is_configured:
                             search_query = f"{task.title} {task.description or ''}".strip()[:200]
-                            search_res = await tavily_client.search(search_query)
+                            search_res = await asyncio.wait_for(tavily_client.search(search_query), timeout=3.0)
                             if search_res.get("answer") or search_res.get("results"):
                                 user_msg_parts.append("\n--- Real-Time Web Intelligence (Tavily Search) ---")
                                 if search_res.get("answer"):
@@ -260,8 +261,12 @@ class TaskCoordinator:
                                 for r in search_res.get("results", [])[:3]:
                                     user_msg_parts.append(f"- [{r['title']}] ({r['url']}): {r['content'][:300]}")
                                 user_msg_parts.append("--------------------------------------------------\n")
+                    except asyncio.TimeoutError:
+                        logger.info("Tavily search exceeded 3.0s threshold; proceeding with model generation to minimize latency")
                     except Exception as tavily_exc:
                         logger.debug("Tavily search enrichment skipped: %s", tavily_exc)
+
+                target_max_tokens = 4096 if task.task_type in ("code", "write") else 2048
 
                 req = ProviderRequest(
                     task_id=task_id,
@@ -270,7 +275,7 @@ class TaskCoordinator:
                     user_message="\n".join(user_msg_parts),
                     context=context_package,
                     temperature=0.3,
-                    max_tokens=4096,
+                    max_tokens=target_max_tokens,
                 )
 
                 accumulated_tokens: List[str] = []

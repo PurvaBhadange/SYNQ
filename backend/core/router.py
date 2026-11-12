@@ -18,10 +18,11 @@ Principles:
     an audit trail of rejected providers with explicit reasons.
 """
 
+import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 
 from core.capability_registry import CapabilityRegistry, registry as default_registry
 from providers.base import BaseProvider, ProviderCapability
@@ -62,48 +63,52 @@ class RoutingResult:
 
 # Domain-specific specialist rankings:
 # Mapping of task_type -> priority ranking of (provider_id, model_pattern, specialist_bonus)
+# Tuned for ultra-low latency: Groq LPU inference models (500-800 tokens/sec, ~200ms TTFT)
+# are prioritized for high-speed interactivity, with seamless fallback to Gemini/Mistral/Ollama.
 TASK_DOMAIN_SPECIALISTS: Dict[str, List[tuple[str, str, float]]] = {
     "code": [
-        ("groq", "qwen3.8-27b", 35.0),              # Ultra-fast open coding specialist on LPU
+        ("groq", "qwen3.8-27b", 40.0),              # Ultra-fast open coding specialist on LPU
+        ("groq", "openai/gpt-oss-120b", 35.0),      # High-speed frontier reasoning on LPU
         ("mistral", "codestral-latest", 30.0),      # Dedicated coding model
         ("gemini", "gemini-3.8-flash", 25.0),       # High-capacity cloud reasoning
-        ("groq", "openai/gpt-oss-120b", 25.0),      # 120B reasoning
         ("huggingface", "mistralai/Mistral-7B-Instruct-v0.3", 15.0),
         ("ollama", "qwen2.5-coder", 20.0),          # Local coder if present
         ("ollama", "llama3.2", 5.0),                # Generic fallback
     ],
     "research": [
-        ("gemini", "gemini-3.8-flash", 35.0),       # 1M token context window & web synthesis
-        ("gemini", "gemini-1.5-flash", 35.0),       # Backward compatibility alias
-        ("groq", "openai/gpt-oss-120b", 28.0),      # 120B knowledge base
-        ("groq", "qwen3.8-27b", 22.0),
+        ("groq", "openai/gpt-oss-120b", 40.0),      # 120B knowledge reasoning at ultra-high LPU speed
+        ("groq", "qwen3.8-27b", 35.0),              # Fast web synthesis & structured analysis
+        ("gemini", "gemini-3.8-flash", 30.0),       # 1M token context window & web synthesis
+        ("gemini", "gemini-1.5-flash", 30.0),       # Backward compatibility alias
         ("mistral", "mistral-large-latest", 25.0),
         ("ollama", "llama3.2", 5.0),
     ],
     "analyze": [
-        ("groq", "openai/gpt-oss-120b", 35.0),      # Frontier 120B reasoning specialist
+        ("groq", "openai/gpt-oss-120b", 40.0),      # Frontier 120B reasoning specialist
+        ("groq", "qwen3.8-27b", 35.0),              # Fast structured analytics
         ("gemini", "gemini-3.8-flash", 30.0),
-        ("groq", "qwen3.8-27b", 25.0),
         ("mistral", "mistral-large-latest", 25.0),
         ("ollama", "llama3.2", 10.0),
     ],
     "write": [
-        ("gemini", "gemini-3.8-flash", 35.0),       # High-cohesion long-form writing & documentation
-        ("gemini", "gemini-1.5-flash", 35.0),       # Backward compatibility alias
-        ("groq", "openai/gpt-oss-120b", 28.0),      # 120B writing
-        ("groq", "qwen3.8-27b", 20.0),
+        ("groq", "openai/gpt-oss-120b", 40.0),      # 120B natural prose at 500+ tok/s
+        ("groq", "openai/gpt-oss-20b", 35.0),       # Instant drafting
+        ("gemini", "gemini-3.8-flash", 30.0),       # High-cohesion long-form writing
+        ("gemini", "gemini-1.5-flash", 30.0),
+        ("groq", "qwen3.8-27b", 25.0),
         ("mistral", "mistral-large-latest", 25.0),
         ("ollama", "llama3.2", 10.0),
     ],
     "plan": [
-        ("groq", "openai/gpt-oss-120b", 35.0),      # Multi-step strategic planning (120B)
+        ("groq", "openai/gpt-oss-120b", 40.0),      # Multi-step strategic planning (120B on LPU)
+        ("groq", "qwen3.8-27b", 35.0),              # Fast DAG decomposition
         ("gemini", "gemini-3.8-flash", 30.0),
-        ("groq", "qwen3.8-27b", 25.0),
         ("ollama", "llama3.2", 15.0),               # Fast local planning
     ],
     "general": [
+        ("groq", "openai/gpt-oss-120b", 35.0),      # Sub-second general query answering
+        ("groq", "openai/gpt-oss-20b", 30.0),
         ("ollama", "llama3.2", 25.0),               # Fast zero-cost local execution
-        ("groq", "openai/gpt-oss-120b", 20.0),
         ("gemini", "gemini-3.8-flash", 15.0),
     ],
 }
@@ -113,6 +118,7 @@ class HealthTracker:
     """
     In-memory health and degradation tracker.
     Provides cooldown periods when providers experience repeated or non-retryable failures.
+    Caches successful and failed health probes to eliminate redundant synchronous network delays.
     """
 
     def __init__(self, cooldown_seconds: int = 180):
@@ -121,12 +127,15 @@ class HealthTracker:
         self._degraded_until: Dict[str, float] = {}
         # Key: "{provider_id}:{model_id}" -> (is_healthy, last_check_time)
         self._health_cache: Dict[str, tuple[bool, float]] = {}
-        self.cache_ttl = 30.0
+        # Extended cache TTL (5 minutes) so fast subsequent routes avoid network probing
+        self.cache_ttl = 300.0
 
     def mark_degraded(self, provider_id: str, model_id: str, duration: Optional[int] = None) -> None:
         key = f"{provider_id}:{model_id}"
         cooldown = duration if duration is not None else self.cooldown_seconds
         self._degraded_until[key] = time.time() + cooldown
+        # Invalidate health cache on explicit degradation
+        self._health_cache[key] = (False, time.time())
         logger.warning("Provider %s marked degraded for %ss", key, cooldown)
 
     def is_degraded(self, provider_id: str, model_id: str) -> bool:
@@ -137,8 +146,9 @@ class HealthTracker:
     def clear_degradation(self, provider_id: str, model_id: str) -> None:
         key = f"{provider_id}:{model_id}"
         self._degraded_until.pop(key, None)
+        self._health_cache.pop(key, None)
 
-    async def check_health(self, provider: BaseProvider, force: bool = False) -> bool:
+    async def check_health(self, provider: BaseProvider, force: bool = False, timeout: float = 1.2) -> bool:
         cap = provider.get_capability()
         key = f"{cap.provider_id}:{cap.model_id}"
         now = time.time()
@@ -152,9 +162,10 @@ class HealthTracker:
                 return is_healthy
 
         try:
-            is_healthy = await provider.health_check()
+            # Bound probe strictly so no slow or unreachable provider delays the routing pipeline
+            is_healthy = await asyncio.wait_for(provider.health_check(), timeout=timeout)
         except Exception as exc:
-            logger.warning("Health check failed for %s: %s", key, exc)
+            logger.debug("Health check probe failed or timed out for %s: %s", key, exc)
             is_healthy = False
 
         self._health_cache[key] = (is_healthy, now)
@@ -223,6 +234,8 @@ class Router:
                     )
         elif user_override_provider and not user_override_model:
             allowed_providers = [user_override_provider]
+
+        pass1_candidates: List[Tuple[ProviderCapability, BaseProvider]] = []
 
         for cap in all_caps:
             key = f"{cap.provider_id}:{cap.model_id}"
@@ -315,7 +328,7 @@ class Router:
                 )
                 continue
 
-            # 6. Degraded / Health check
+            # 6. Degraded check
             if self.health.is_degraded(cap.provider_id, cap.model_id):
                 rejected.append(
                     RejectedCandidate(
@@ -327,8 +340,19 @@ class Router:
                 )
                 continue
 
-            is_healthy = await self.health.check_health(provider)
-            if not is_healthy:
+            pass1_candidates.append((cap, provider))
+
+        # Parallel Health Checking Pass: probe candidates concurrently bounded by timeout
+        if pass1_candidates:
+            health_results = await asyncio.gather(
+                *[self.health.check_health(p) for _, p in pass1_candidates],
+                return_exceptions=True,
+            )
+        else:
+            health_results = []
+
+        for (cap, provider), is_healthy in zip(pass1_candidates, health_results):
+            if is_healthy is not True:
                 rejected.append(
                     RejectedCandidate(
                         provider_id=cap.provider_id,

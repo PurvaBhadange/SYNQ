@@ -616,7 +616,7 @@ export default function ProjectWorkspacePage({
                     }}
                   >
                     {executingTaskId === selectedTaskDetail.id
-                      ? liveStreamOutput || 'Waiting for agent generation...'
+                      ? (liveStreamOutput ? liveStreamOutput + ' ▋' : 'Routing to optimal low-latency agent...')
                       : selectedTaskDetail.executions.length > 0 && selectedTaskDetail.executions[0].output
                       ? selectedTaskDetail.executions[0].output
                       : selectedTaskDetail.executions.length > 0 && selectedTaskDetail.executions[0].error_message

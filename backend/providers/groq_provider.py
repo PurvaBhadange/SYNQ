@@ -88,6 +88,21 @@ _DEFAULT_CAPABILITY = {
 }
 
 
+# Global persistent HTTP/2 client for connection pooling and ultra-low latency inference
+_shared_client: Optional[httpx.AsyncClient] = None
+
+
+def _get_groq_client() -> httpx.AsyncClient:
+    global _shared_client
+    if _shared_client is None or _shared_client.is_closed:
+        _shared_client = httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=4.0, read=60.0, write=10.0, pool=5.0),
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=50, keepalive_expiry=120.0),
+            http2=True,
+        )
+    return _shared_client
+
+
 class GroqProvider(BaseProvider):
     """
     Provider for Groq Cloud inference using OpenAI-compatible endpoints.
@@ -136,12 +151,13 @@ class GroqProvider(BaseProvider):
         if not self.is_configured:
             return False
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                res = await client.get(
-                    f"{self._base_url}/models",
-                    headers={"Authorization": f"Bearer {self._api_key}"},
-                )
-                return res.status_code == 200
+            client = _get_groq_client()
+            res = await client.get(
+                f"{self._base_url}/models",
+                headers={"Authorization": f"Bearer {self._api_key}"},
+                timeout=2.5,
+            )
+            return res.status_code == 200
         except Exception as exc:
             logger.debug("Groq health check failed: %s", exc)
             return False
@@ -169,34 +185,34 @@ class GroqProvider(BaseProvider):
         }
 
         try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                resp = await client.post(
-                    f"{self._base_url}/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self._api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json=payload,
-                )
-                if resp.status_code != 200:
-                    raise ProviderError(
-                        error_type="unknown",
-                        message=f"Groq error ({resp.status_code}): {resp.text}",
-                        is_retryable=resp.status_code in (429, 500, 502, 503),
-                        provider_id=self.provider_id,
-                        model_id=self.model_id,
-                    )
-                data = resp.json()
-                content = data["choices"][0]["message"]["content"]
-                usage = data.get("usage", {})
-                return ProviderResponse(
+            client = _get_groq_client()
+            resp = await client.post(
+                f"{self._base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self._api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            if resp.status_code != 200:
+                raise ProviderError(
+                    error_type="unknown",
+                    message=f"Groq error ({resp.status_code}): {resp.text}",
+                    is_retryable=resp.status_code in (429, 500, 502, 503),
                     provider_id=self.provider_id,
                     model_id=self.model_id,
-                    content=content,
-                    tokens_input=usage.get("prompt_tokens"),
-                    tokens_output=usage.get("completion_tokens"),
-                    raw_response=data,
                 )
+            data = resp.json()
+            content = data["choices"][0]["message"]["content"]
+            usage = data.get("usage", {})
+            return ProviderResponse(
+                provider_id=self.provider_id,
+                model_id=self.model_id,
+                content=content,
+                tokens_input=usage.get("prompt_tokens"),
+                tokens_output=usage.get("completion_tokens"),
+                raw_response=data,
+            )
         except ProviderError:
             raise
         except Exception as exc:
@@ -231,40 +247,40 @@ class GroqProvider(BaseProvider):
         }
 
         try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                async with client.stream(
-                    "POST",
-                    f"{self._base_url}/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self._api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json=payload,
-                ) as resp:
-                    if resp.status_code != 200:
-                        err_text = await resp.aread()
-                        raise ProviderError(
-                            error_type="unknown",
-                            message=f"Groq stream failed ({resp.status_code}): {err_text.decode('utf-8', errors='ignore')}",
-                            is_retryable=resp.status_code in (429, 500, 502, 503),
-                            provider_id=self.provider_id,
-                            model_id=self.model_id,
-                        )
-                    async for line in resp.aiter_lines():
-                        line = line.strip()
-                        if not line or not line.startswith("data: "):
-                            continue
-                        data_str = line[6:].strip()
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            chunk = json.loads(data_str)
-                            delta = chunk["choices"][0].get("delta", {})
-                            content = delta.get("content")
-                            if content:
-                                yield content
-                        except json.JSONDecodeError:
-                            continue
+            client = _get_groq_client()
+            async with client.stream(
+                "POST",
+                f"{self._base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self._api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            ) as resp:
+                if resp.status_code != 200:
+                    err_text = await resp.aread()
+                    raise ProviderError(
+                        error_type="unknown",
+                        message=f"Groq stream failed ({resp.status_code}): {err_text.decode('utf-8', errors='ignore')}",
+                        is_retryable=resp.status_code in (429, 500, 502, 503),
+                        provider_id=self.provider_id,
+                        model_id=self.model_id,
+                    )
+                async for line in resp.aiter_lines():
+                    line = line.strip()
+                    if not line or not line.startswith("data: "):
+                        continue
+                    data_str = line[6:].strip()
+                    if data_str == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(data_str)
+                        delta = chunk["choices"][0].get("delta", {})
+                        content = delta.get("content")
+                        if content:
+                            yield content
+                    except json.JSONDecodeError:
+                        continue
         except ProviderError:
             raise
         except Exception as exc:

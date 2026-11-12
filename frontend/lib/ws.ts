@@ -67,25 +67,46 @@ export function getWsBase(): string {
 export class SynqWebSocket {
   private ws: WebSocket | null = null;
   private projectId: string;
-  private url: string;
   private handlers: Set<EventHandler> = new Set();
   private reconnectTimer: any = null;
+  private pingInterval: any = null;
   private isDestroyed = false;
+  private reconnectAttempts = 0;
 
   constructor(projectId: string) {
     this.projectId = projectId;
-    const wsBase = getWsBase();
-    this.url = `${wsBase}/${projectId}`;
     this.connect();
+  }
+
+  private getFullUrl(): string {
+    const wsBase = getWsBase();
+    let token = '';
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('synq_token') || sessionStorage.getItem('synq_token') || '';
+    }
+    const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : '';
+    return `${wsBase}/${this.projectId}${tokenQuery}`;
   }
 
   private connect() {
     if (this.isDestroyed) return;
     try {
-      this.ws = new WebSocket(this.url);
+      const url = this.getFullUrl();
+      this.ws = new WebSocket(url);
 
       this.ws.onopen = () => {
-        // Connected
+        this.reconnectAttempts = 0;
+        // Start 20-second heartbeat ping to prevent cloud proxy disconnects
+        if (this.pingInterval) clearInterval(this.pingInterval);
+        this.pingInterval = setInterval(() => {
+          if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            try {
+              this.ws.send(JSON.stringify({ type: 'ping' }));
+            } catch {
+              // Ignore ping errors
+            }
+          }
+        }, 20000);
       };
 
       this.ws.onmessage = (event) => {
@@ -98,8 +119,12 @@ export class SynqWebSocket {
       };
 
       this.ws.onclose = () => {
+        if (this.pingInterval) clearInterval(this.pingInterval);
         if (!this.isDestroyed) {
-          this.reconnectTimer = setTimeout(() => this.connect(), 3000);
+          // Exponential reconnect backoff: 1s, 2s, 3s, max 5s
+          this.reconnectAttempts = Math.min(this.reconnectAttempts + 1, 5);
+          const delay = Math.min(1000 * Math.pow(1.5, this.reconnectAttempts), 5000);
+          this.reconnectTimer = setTimeout(() => this.connect(), delay);
         }
       };
 
@@ -108,7 +133,7 @@ export class SynqWebSocket {
       };
     } catch (err) {
       if (!this.isDestroyed) {
-        this.reconnectTimer = setTimeout(() => this.connect(), 3000);
+        this.reconnectTimer = setTimeout(() => this.connect(), 2000);
       }
     }
   }
@@ -123,8 +148,13 @@ export class SynqWebSocket {
   public destroy() {
     this.isDestroyed = true;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    if (this.pingInterval) clearInterval(this.pingInterval);
     if (this.ws) {
-      this.ws.close();
+      try {
+        this.ws.close();
+      } catch {
+        // Ignore close errors
+      }
       this.ws = null;
     }
     this.handlers.clear();
